@@ -25,7 +25,7 @@ export class JsonRpcProvider extends AbstractProvider {
         baseURL: options.baseURL,
         headers: {
           "x-sdk-version": sdkVersion,
-          "x-source": "tonfura-provider",
+          "x-source": "tonx-provider",
         },
       });
     }

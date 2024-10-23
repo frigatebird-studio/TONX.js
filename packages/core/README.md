@@ -1,28 +1,28 @@
-# Tonfura.js
+# TONX.js
 
-A simple developer tool for Ton ecosystem which contains specialized function with [Tonfura](https://tonfura.com/) rpc provider.
+A simple developer tool for Ton ecosystem which contains specialized function with [TONX](https://tonxapi.com/) rpc provider.
 
 ## Features
 
-- Tonfura rpc method
+- TONX rpc method
 - Signed typed data
 
 ## Install
 
 ```bash
-npm install @tonfurajs/core
+npm install @tonx/core
 ```
 
-If you want to use tonfura rich function to build up your dapp. You can [register](https://auth.tonfura.com/signup) an account and get a free api key.
+If you want to use TONX's rich function to build up your dapp. You can [register](https://auth.tonxapi.com/signup) an account and get a free API key.
 
 There are some basic structures for sdk development.
 
 ## Example
 
 ```js
-import { TonfuraJsonRpcProvider } from "@tonfurajs/core";
+import { TONXJsonRpcProvider } from "@tonx/core";
 
-const client = new TonfuraJsonRpcProvider({
+const client = new TONXJsonRpcProvider({
   network: "mainnet",
   apiKey: "YOUR_API_KEY",
 });
@@ -34,7 +34,7 @@ console.log(res);
 
 ## Documents
 
-[Documentation](https://docs.tonfura.com/docs/welcome-to-tonfura)
+[Documentation](https://docs.tonxapi.com/docs/welcome-to-tonxapi)
 
 ## License
 

@@ -1,7 +1,7 @@
 export {
   AbstractProvider,
   JsonRpcProvider,
-  TonfuraJsonRpcProvider,
+  TONXJsonRpcProvider,
 } from "./providers";
 
 export { AbstractSigner, BaseSigner } from "./signer";

@@ -18,10 +18,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@tonfura/adapter": [
+      "@tonx/adapter": [
         "packages/adapter/src/index.ts"
       ],
-      "@tonfura/core": [
+      "@tonx/core": [
         "packages/core/src/index.ts"
       ]
     }

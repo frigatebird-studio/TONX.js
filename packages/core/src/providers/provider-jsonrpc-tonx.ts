@@ -157,7 +157,7 @@ type SendMessageParams = {
   boc: string;
 };
 
-type TonfuraRunAction =
+type TONXRunAction =
   | RunAction
   | {
       method: "getAccountBalance";
@@ -243,27 +243,27 @@ type TonfuraRunAction =
       params: SendMessageParams;
     };
 
-export type TonfuraJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
+export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
   apiKey: string;
   httpClientOptions?: CreateAxiosDefaults;
 };
 
 const version = "v2";
-export class TonfuraJsonRpcProvider extends JsonRpcProvider {
-  constructor(options: TonfuraJsonRpcProviderOptions) {
+export class TONXJsonRpcProvider extends JsonRpcProvider {
+  constructor(options: TONXJsonRpcProviderOptions) {
     super();
     const { network, apiKey, httpClientOptions } = options;
     this.init({
       network,
       httpFetchClient: new HttpFetchClient({
-        baseURL: `https://${network}-rpc.tonfura.com/${version}/json-rpc/${apiKey}`,
+        baseURL: `https://${network}-rpc.tonxapi.com/${version}/json-rpc/${apiKey}`,
         ...httpClientOptions,
       }),
     });
   }
 
   getRpcRequest(
-    action: TonfuraRunAction
+    action: TONXRunAction
   ): null | { method: string; params: Record<string, any> } {
     switch (action.method) {
       case "getAccountBalance":

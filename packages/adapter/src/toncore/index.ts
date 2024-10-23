@@ -32,7 +32,7 @@ class ToncoreAdapter extends TonClient {
       endpoint: "",
     });
     this.api = new ProxiedHttp(
-      `https://${network}-rpc.tonfura.com/v1/json-rpc/${apiKey}`,
+      `https://${network}-rpc.tonxapi.com/v1/json-rpc/${apiKey}`,
       {
         adapter: async (config) => {
           const adapter = axios.getAdapter("http");

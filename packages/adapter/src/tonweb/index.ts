@@ -35,7 +35,7 @@ class TonWebAdapter extends TonWeb {
     super(
       //@ts-ignore
       new TonWebWrappedHttpProvider(
-        `https://${network}-rpc.tonfura.com/v1/json-rpc/${apiKey}`
+        `https://${network}-rpc.tonxapi.com/v1/json-rpc/${apiKey}`
       )
     );
   }
