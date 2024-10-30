@@ -20,7 +20,7 @@ const ProxiedHttp = new Proxy(HttpApi, {
 });
 
 class ToncoreAdapter extends TonClient {
-  #api: any;
+  // #api: any;
   constructor({
     apiKey,
     network,
@@ -36,12 +36,10 @@ class ToncoreAdapter extends TonClient {
       {
         adapter: async (config) => {
           const adapter = axios.getAdapter("http");
-          // @ts-expect-error
-          config.headers = {
-            ...config.headers.toJSON(),
+          config.headers = config.headers.concat({
             "x-source": "toncore-adapter",
             "x-adapter-version": version,
-          };
+          });
           const r = await adapter(config);
           if (r.status !== 200) {
             throw r;
