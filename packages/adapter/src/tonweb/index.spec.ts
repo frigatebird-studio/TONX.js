@@ -4,14 +4,26 @@ import TonWebAdapter from "./index";
 const network = "mainnet";
 const tonxApiKey = process.env["TONX_API_KEY"];
 
-const describeCond = tonxApiKey ? describe : describe.skip;
+const itCond = tonxApiKey ? it : it.skip;
 
-describeCond("TonWebAdapter", () => {
-  const adapter = new TonWebAdapter({ network, apiKey: tonxApiKey as string });
+describe("TonWebAdapter", () => {
+  let tonWeb!: TonWeb;
 
-  it("can get the balance given an address", async () => {
+  beforeEach(() => {
+    tonWeb = new TonWebAdapter({ network, apiKey: tonxApiKey as string });
+  });
+
+  itCond("bail out on invalid address", async () => {
+    const p = tonWeb.getBalance({ toString: () => "xxx" } as string);
+
+    await p.catch((err: string) => {
+      expect(err).toMatch("Incorrect");
+    });
+  });
+
+  itCond("can get the balance given an address", async () => {
     const addr = new TonWeb.utils.Address("EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c");
-    const balance = BigInt(await adapter.getBalance(addr));
+    const balance = BigInt(await tonWeb.getBalance(addr));
     expect(balance).toBeGreaterThan(0);
   });
 });

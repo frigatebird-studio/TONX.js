@@ -23,6 +23,7 @@ import {
 } from './converters'
 
 import { createProvider } from './createProvider';
+import { appendSearchParam } from "../common";
 
 class TonClient4Adapter {
   endpoint: string
@@ -69,7 +70,7 @@ class TonClient4Adapter {
   async sendRest(path: string, method: 'GET' | 'POST' | 'UPDATE' | 'DELETE', params: any) {
     let url = this.getRestEndpoint(path);
     if (method === 'GET' && params) {
-      url += '?' + new URLSearchParams(params).toString();
+      url = appendSearchParam(url, params);
     }
     const response = await fetch(url, {
       method,
@@ -268,7 +269,7 @@ class TonClient4Adapter {
      * @returns parsed transactions
      */
   async getAccountTransactionsParsed(address: Address, lt: bigint, hash: Buffer, count: number = 20) {
-    const path = '/account/' + address.toString({ urlSafe: true }) + '/tx/parsed/' + lt.toString(10) + '/' + toUrlSafe(hash.toString('base64')) + '?' + new URLSearchParams({ count: count.toString() }).toString();
+    const path = appendSearchParam('/account/' + address.toString({ urlSafe: true }) + '/tx/parsed/' + lt.toString(10) + '/' + toUrlSafe(hash.toString('base64')), { count: count.toString() });
 
     const tonhubData = await this.sendTonhubRequest(path, 'GET');
 

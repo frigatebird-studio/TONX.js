@@ -12,10 +12,7 @@ const addr = Address.parse("EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c");
 let axiosHttpAdapter: jest.MockedFunction<AxiosAdapter>;
 
 {
-  let mockedAxiosGetAdapter: jest.SpyInstance<
-    AxiosAdapter,
-    Parameters<typeof axios.getAdapter>
-  >;
+  let mockedAxiosGetAdapter: jest.SpyInstance<AxiosAdapter, Parameters<typeof axios.getAdapter>>;
 
   beforeAll(() => {
     const getAdapterOrig = axios.getAdapter;
@@ -49,17 +46,14 @@ describe("ToncoreAdapter", () => {
     await p.catch((err: AxiosError) => {
       expect(err).toBeInstanceOf(AxiosError);
       expect(err.response).toBeDefined();
-      expect(err.response!.data).toMatchObject({ error: { code: -32603 } });
+      expect(err.response!.data).toMatchObject({ ok: false });
     });
   });
 
   itCond("can get the balance given an address", async () => {
     const balance = await tonClient.getBalance(addr);
 
-    expect(
-      axiosHttpAdapter.mock.lastCall![0].headers.get("x-source") ==
-        "toncore-adapter",
-    );
+    expect(axiosHttpAdapter.mock.lastCall![0].headers.get("x-source") == "toncore-adapter");
     expect(balance).toBeGreaterThan(0);
   });
 
