@@ -1,9 +1,14 @@
 {
   "name": "@tonx/adapter",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": false,
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frigatebird-studio/TONX.js.git",
+    "directory": "packages/adapter"
   },
   "main": "./index.cjs",
   "type": "module",
