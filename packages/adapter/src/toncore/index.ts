@@ -2,14 +2,12 @@ import axios from "axios";
 import { TonClient, HttpApi } from "@ton/ton";
 import { z } from "zod";
 import { version } from "../../package.json";
-import { version as tonClientVersion } from "@ton/ton/package.json";
 import { isPostMethod, appendSearchParam } from "../common";
 
 // duplicating the logic of HttpApi.#doCall since we need to branch at axios sending GET/POST requests
 async function httpApiDoCall<T>(this: HttpApi, method: string, body: any, codec: z.ZodType<T>) {
   const headers = {
     "Content-Type": "application/json",
-    "X-Ton-Client-Version": tonClientVersion,
   };
 
   // private member
@@ -27,7 +25,7 @@ async function httpApiDoCall<T>(this: HttpApi, method: string, body: any, codec:
   const p =
     shouldSendPost ?
       axios.post<Result>(endpoint, JSON.stringify(body), axiosConfig)
-    : axios.get<Result>(appendSearchParam(endpoint, body), axiosConfig);
+      : axios.get<Result>(appendSearchParam(endpoint, body), axiosConfig);
 
   const res = await p;
   if (res.status !== 200 || !res.data.ok) {
