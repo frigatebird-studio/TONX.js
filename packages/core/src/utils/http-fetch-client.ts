@@ -10,7 +10,7 @@ export default class HttpFetchClient {
   }
 
   async send(payload: any): Promise<any> {
-    const response = await this.client.post('/', payload);
+    const response = await this.client.post('', payload);
     if (response.status !== 200) throw new Error('Request failed');
     return response.data.result;
   }
