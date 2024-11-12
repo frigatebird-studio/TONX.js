@@ -7,11 +7,6 @@
     "@ton/ton": "^13.11.2",
     "axios": "^1.7.2"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/frigatebird-studio/TONX.js.git",
-    "directory": "packages/core"
-  },
   "type": "commonjs",
   "main": "./index.cjs"
 }
