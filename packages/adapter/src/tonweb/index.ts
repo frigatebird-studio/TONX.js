@@ -12,23 +12,16 @@ class TonWebWrappedHttpProvider extends TonWeb.HttpProvider {
     const endpoint = apiUrl.replace("@@METHOD@@", method);
     const shouldSendPost = isPostMethod(method);
 
-    const headers: Record<string, string> = {
-      "x-source": "tonweb-adapter",
-      "x-adapter-version": version,
-    };
-
     let call: ReturnType<typeof fetch>;
 
     if (shouldSendPost) {
       call = fetch(endpoint, {
         method: "POST",
-        headers: { ...headers, "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request.params),
       });
     } else {
-      call = fetch(appendSearchParam(endpoint, request.params), {
-        headers,
-      });
+      call = fetch(appendSearchParam(endpoint, request.params));
     }
 
     return call
