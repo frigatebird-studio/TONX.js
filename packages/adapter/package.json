@@ -5,11 +5,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/frigatebird-studio/TONX.js.git",
-    "directory": "packages/adapter"
-  },
   "main": "./index.cjs",
   "type": "module",
   "exports": {
