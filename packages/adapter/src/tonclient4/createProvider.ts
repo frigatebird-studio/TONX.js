@@ -65,7 +65,7 @@ export function createProvider(client: TonClient4Adapter, block: number | null, 
                 state: storage
             };
         },
-        async get(name, args) {
+        async get(name: string, args) {
             let sq = block;
             if (sq === null) {
                 let res = await client.getLastBlock();
