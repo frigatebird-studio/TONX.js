@@ -9,14 +9,14 @@ importers:
   .:
     dependencies:
       '@ton/core':
-        specifier: ^0.56.3
-        version: 0.56.3(@ton/crypto@3.2.0)
+        specifier: ^0.59.0
+        version: 0.59.0(@ton/crypto@3.2.0)
       '@ton/crypto':
         specifier: ^3.2.0
         version: 3.2.0
       '@ton/ton':
-        specifier: ^13.11.1
-        version: 13.11.1(@ton/core@0.56.3(@ton/crypto@3.2.0))(@ton/crypto@3.2.0)
+        specifier: ^15.1.0
+        version: 15.1.0(@ton/core@0.59.0(@ton/crypto@3.2.0))(@ton/crypto@3.2.0)
       axios:
         specifier: ^1.7.1
         version: 1.7.1
@@ -1085,8 +1085,8 @@ packages:
   '@sinonjs/fake-timers@10.3.0':
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
 
-  '@ton/core@0.56.3':
-    resolution: {integrity: sha512-HVkalfqw8zqLLPehtq0CNhu5KjVzc7IrbDwDHPjGoOSXmnqSobiWj8a5F+YuWnZnEbQKtrnMGNOOjVw4LG37rg==}
+  '@ton/core@0.59.0':
+    resolution: {integrity: sha512-LSIkGst7BoY7fMWshejzcH0UJnoW21JGlRrW0ch+6A7Xb/7EuekxgdKym7fHxcry6OIf6FoeFg97lJ960N/Ghg==}
     peerDependencies:
       '@ton/crypto': '>=3.2.0'
 
@@ -1096,10 +1096,10 @@ packages:
   '@ton/crypto@3.2.0':
     resolution: {integrity: sha512-50RkwReEuV2FkxSZ8ht/x9+n0ZGtwRKGsJ0ay4I/HFhkYVG/awIIBQeH0W4j8d5lADdO5h01UtX8PJ8AjiejjA==}
 
-  '@ton/ton@13.11.1':
-    resolution: {integrity: sha512-tcLdHzwhS5bmS0EGstcmfYK0ZeRrNz1AUIzUGKq/Xh0MGEwfP1qZBMloGGHLQnyZdRQ1D7Wx4g4mBKNrvG6DcQ==}
+  '@ton/ton@15.1.0':
+    resolution: {integrity: sha512-almetcfTu7jLjcNcEEPB7wAc8yl90ES1M//sOr1QE+kv7RbmEvMkaPSc7kFxzs10qrjIPKxlodBJlMSWP5LuVQ==}
     peerDependencies:
-      '@ton/core': '>=0.56.0'
+      '@ton/core': '>=0.59.0'
       '@ton/crypto': '>=3.2.0'
 
   '@types/istanbul-lib-coverage@2.0.6':
@@ -1159,6 +1159,7 @@ packages:
   '@xmldom/xmldom@0.7.13':
     resolution: {integrity: sha512-lm2GW5PkosIzccsaZIz7tp8cPADSIlIHWDFTR1N0SzfinhhYgeIQjFMz4rYzanCScr3DqQLeomUDArp6MWKm+g==}
     engines: {node: '>=10.0.0'}
+    deprecated: this version is no longer supported, please update to at least 0.8.*
 
   '@xmldom/xmldom@0.8.10':
     resolution: {integrity: sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==}
@@ -5962,7 +5963,7 @@ snapshots:
       '@sinonjs/commons': 3.0.1
     optional: true
 
-  '@ton/core@0.56.3(@ton/crypto@3.2.0)':
+  '@ton/core@0.59.0(@ton/crypto@3.2.0)':
     dependencies:
       '@ton/crypto': 3.2.0
       symbol.inspect: 1.0.1
@@ -5977,9 +5978,9 @@ snapshots:
       jssha: 3.2.0
       tweetnacl: 1.0.3
 
-  '@ton/ton@13.11.1(@ton/core@0.56.3(@ton/crypto@3.2.0))(@ton/crypto@3.2.0)':
+  '@ton/ton@15.1.0(@ton/core@0.59.0(@ton/crypto@3.2.0))(@ton/crypto@3.2.0)':
     dependencies:
-      '@ton/core': 0.56.3(@ton/crypto@3.2.0)
+      '@ton/core': 0.59.0(@ton/crypto@3.2.0)
       '@ton/crypto': 3.2.0
       axios: 1.7.1
       dataloader: 2.2.2

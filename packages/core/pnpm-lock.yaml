@@ -9,22 +9,22 @@ importers:
   .:
     dependencies:
       '@ton/core':
-        specifier: ^0.56.3
-        version: 0.56.3(@ton/crypto@3.2.0)
+        specifier: ^0.59.0
+        version: 0.59.0(@ton/crypto@3.2.0)
       '@ton/crypto':
         specifier: ^3.2.0
         version: 3.2.0
       '@ton/ton':
-        specifier: ^13.11.2
-        version: 13.11.2(@ton/core@0.56.3)(@ton/crypto@3.2.0)
+        specifier: ^15.1.0
+        version: 15.1.0(@ton/core@0.59.0(@ton/crypto@3.2.0))(@ton/crypto@3.2.0)
       axios:
         specifier: ^1.7.2
         version: 1.7.2
 
 packages:
 
-  '@ton/core@0.56.3':
-    resolution: {integrity: sha512-HVkalfqw8zqLLPehtq0CNhu5KjVzc7IrbDwDHPjGoOSXmnqSobiWj8a5F+YuWnZnEbQKtrnMGNOOjVw4LG37rg==}
+  '@ton/core@0.59.0':
+    resolution: {integrity: sha512-LSIkGst7BoY7fMWshejzcH0UJnoW21JGlRrW0ch+6A7Xb/7EuekxgdKym7fHxcry6OIf6FoeFg97lJ960N/Ghg==}
     peerDependencies:
       '@ton/crypto': '>=3.2.0'
 
@@ -34,10 +34,10 @@ packages:
   '@ton/crypto@3.2.0':
     resolution: {integrity: sha512-50RkwReEuV2FkxSZ8ht/x9+n0ZGtwRKGsJ0ay4I/HFhkYVG/awIIBQeH0W4j8d5lADdO5h01UtX8PJ8AjiejjA==}
 
-  '@ton/ton@13.11.2':
-    resolution: {integrity: sha512-EPqW+ZTe0MmfqguJEIGMuAqTAFRKMEce95HlDx8h6CGn2y3jiMgV1/oO+WpDIOiX+1wnTu+xtajk8JTWr8nKRQ==}
+  '@ton/ton@15.1.0':
+    resolution: {integrity: sha512-almetcfTu7jLjcNcEEPB7wAc8yl90ES1M//sOr1QE+kv7RbmEvMkaPSc7kFxzs10qrjIPKxlodBJlMSWP5LuVQ==}
     peerDependencies:
-      '@ton/core': '>=0.56.0'
+      '@ton/core': '>=0.59.0'
       '@ton/crypto': '>=3.2.0'
 
   asynckit@0.4.0:
@@ -98,7 +98,7 @@ packages:
 
 snapshots:
 
-  '@ton/core@0.56.3(@ton/crypto@3.2.0)':
+  '@ton/core@0.59.0(@ton/crypto@3.2.0)':
     dependencies:
       '@ton/crypto': 3.2.0
       symbol.inspect: 1.0.1
@@ -113,9 +113,9 @@ snapshots:
       jssha: 3.2.0
       tweetnacl: 1.0.3
 
-  '@ton/ton@13.11.2(@ton/core@0.56.3)(@ton/crypto@3.2.0)':
+  '@ton/ton@15.1.0(@ton/core@0.59.0(@ton/crypto@3.2.0))(@ton/crypto@3.2.0)':
     dependencies:
-      '@ton/core': 0.56.3(@ton/crypto@3.2.0)
+      '@ton/core': 0.59.0(@ton/crypto@3.2.0)
       '@ton/crypto': 3.2.0
       axios: 1.7.2
       dataloader: 2.2.2
