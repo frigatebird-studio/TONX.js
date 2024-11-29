@@ -3,6 +3,7 @@ import { JsonRpcProvider } from "./provider-jsonrpc";
 import type { JsonRpcApiProviderOptions } from "./provider-jsonrpc";
 import { CreateAxiosDefaults } from "axios";
 import { RunAction } from "./abstract-provider";
+import { Network } from "~core/types/network";
 
 type GetAccountBalanceParams = {
   address: string;
@@ -287,7 +288,6 @@ type TONXRunAction =
     method: "getMasterchainInfo",
   }
 
-
 export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
   apiKey: string;
   httpClientOptions?: CreateAxiosDefaults;
@@ -295,16 +295,48 @@ export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
 
 const version = "v2";
 export class TONXJsonRpcProvider extends JsonRpcProvider {
+  private apiKey: string;
+  private network: Network;
+  private httpClientOptions?: CreateAxiosDefaults;
+
   constructor(options: TONXJsonRpcProviderOptions) {
     super();
     const { network, apiKey, httpClientOptions } = options;
+    this.apiKey = apiKey;
+    this.network = network;
+    this.httpClientOptions = httpClientOptions;
+    this.initDefaultEndpoint();
+  }
+
+  private initDefaultEndpoint() {
     this.init({
-      network,
+      network: this.network,
       httpFetchClient: new HttpFetchClient({
-        baseURL: `https://${network}-rpc.tonxapi.com/${version}/json-rpc/${apiKey}`,
-        ...httpClientOptions,
+        baseURL: `https://${this.network}-rpc.tonxapi.com/${version}/json-rpc/${this.apiKey}`,
+        ...this.httpClientOptions,
       }),
     });
+  }
+
+  private async performWithLabsEndpoint(action: TONXRunAction): Promise<any> {
+    const labsClient = new HttpFetchClient({
+      baseURL: `https://${this.network}-rpc.tonxapi.com/${version}/labs/${this.apiKey}`,
+      ...this.httpClientOptions,
+    });
+
+    const request = this.getRpcRequest(action);
+    if (!request) {
+      throw new Error(`Method ${action.method} not implemented`);
+    }
+
+    const response = await labsClient.client.post("", {
+      id: 1,
+      jsonrpc: "2.0",
+      method: request.method,
+      params: request.params
+    });
+
+    return response.data.result;
   }
 
   getRpcRequest(
@@ -496,61 +528,66 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
       params: { address },
     });
   }
+
   async getMasterchainBlockSignatures(seqno: number): Promise<any> {
     return await this._perform({
       method: "getMasterchainBlockSignatures",
       params: { seqno },
     });
   }
+
   async getTokenData(address: string): Promise<any> {
     return await this._perform({
       method: "getTokenData",
       params: { address },
     });
   }
+
   async runGetMethod(params: RunGetMethodParams): Promise<any> {
     return await this._perform({
       method: "runGetMethod",
       params,
     });
   }
+
   async sendMessage(boc: string): Promise<any> {
     return await this._perform({
       method: "sendMessage",
       params: { boc },
     });
   }
+
   async getBocStatus(boc: string): Promise<any> {
-    return await this._perform({
+    return await this.performWithLabsEndpoint({
       method: "getBocStatus",
       params: { boc },
     });
   }
 
   async verifyBoc(boc: string): Promise<any> {
-    return await this._perform({
+    return await this.performWithLabsEndpoint({
       method: "verifyBoc",
       params: { boc },
     });
   }
 
   async radixConversion(params: RadixConversionParams): Promise<any> {
-    return await this._perform({
+    return await this.performWithLabsEndpoint({
       method: "radixConversion",
       params
     });
   }
 
   async binaryConversion(params: BinaryConversionParams): Promise<any> {
-    return await this._perform({
+    return await this.performWithLabsEndpoint({
       method: "binaryConversion",
       params
     });
   }
 
   async detectAddress(address: string): Promise<any> {
-    return await this._perform({
-      method: "binaryConversion",
+    return await this.performWithLabsEndpoint({
+      method: "detectAddress",
       params: { address }
     });
   }
