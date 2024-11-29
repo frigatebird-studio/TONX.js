@@ -117,13 +117,13 @@ type GetAddressInformationParams = {
 type GetAddressStateParams = {
   address: string;
 };
-//TODO
+
 type GetBlockHeaderParams = {
-  workchain: number;
-  shard: string;
-  seqno: number;
-  root_hash?: string;
   file_hash?: string;
+  root_hash?: string;
+  seqno: number;
+  shard: string;
+  workchain: number;
 };
 
 type GetBlockTransactionsParams = {
