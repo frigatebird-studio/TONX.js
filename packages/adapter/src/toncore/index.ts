@@ -1,42 +1,80 @@
 import axios from "axios";
 import { TonClient, HttpApi } from "@ton/ton";
 import { z } from "zod";
-import { version } from "../../package.json";
 import { isPostMethod, appendSearchParam } from "../common";
 
-// duplicating the logic of HttpApi.#doCall since we need to branch at axios sending GET/POST requests
 async function httpApiDoCall<T>(this: HttpApi, method: string, body: any, codec: z.ZodType<T>) {
   const headers = {
     "Content-Type": "application/json",
   };
 
-  // private member
   const parameters = (this as any).parameters;
-  const axiosConfig = {
+  const axiosInstance = axios.create({
     headers,
-    timeout: parameters.timeout,
-    adapter: parameters.adapter,
-  };
+    timeout: parameters.timeout || 10000,
+    transformResponse: [(data) => {
+      try {
+        const parsedData = JSON.parse(data);
+        return {
+          ...parsedData,
+          ok: true
+        };
+      } catch (error) {
+        return { ok: false, error: "Failed to parse response" };
+      }
+    }]
+  });
 
   const endpoint = this.endpoint.replace("@@METHOD@@", method);
   const shouldSendPost = isPostMethod(method);
 
-  type Result = { ok: boolean; result: T };
-  const p =
-    shouldSendPost ?
-      axios.post<Result>(endpoint, JSON.stringify(body), axiosConfig)
-      : axios.get<Result>(appendSearchParam(endpoint, body), axiosConfig);
+  try {
+    type Result = {
+      error: string; ok: boolean; result: T
+    };
+    const response = shouldSendPost
+      ? await axiosInstance.post<Result>(endpoint, JSON.stringify(body))
+      : await axiosInstance.get<Result>(appendSearchParam(endpoint, body));
 
-  const res = await p;
-  if (res.status !== 200 || !res.data.ok) {
-    throw new Error("Received error: " + JSON.stringify(res.data));
-  }
+    if (response.status !== 200 || !response.data.ok) {
+      const error = new Error("Received error: " + JSON.stringify(response.data));
+      (error as any).response = {
+        data: { ok: false, error: response.data.error || "Unknown error" }
+      };
+      throw error;
+    }
 
-  const decoded = codec.safeParse(res.data.result);
-  if (decoded.success) {
+    const decoded = codec.safeParse(response.data.result);
+    if (!decoded.success) {
+      const error = new Error("Malformed response: " + decoded.error.format()._errors.join(", "));
+      (error as any).response = {
+        data: { ok: false, error: "Invalid response format" }
+      };
+      throw error;
+    }
+
     return decoded.data;
-  } else {
-    throw Error("Malformed response: " + decoded.error.format()._errors.join(", "));
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errorData = {
+        ok: false,
+        error: error.response?.data?.error || error.message
+      };
+      const newError = new Error(JSON.stringify(errorData));
+      (newError as any).response = { data: errorData };
+      throw newError;
+    }
+    if (error instanceof Error && (error as any).response) {
+      throw error;
+    }
+    const newError = new Error(JSON.stringify({
+      ok: false,
+      error: error instanceof Error ? error.message : "Unknown error"
+    }));
+    (newError as any).response = {
+      data: { ok: false, error: error instanceof Error ? error.message : "Unknown error" }
+    };
+    throw newError;
   }
 }
 
@@ -44,14 +82,11 @@ const ProxiedHttp = new Proxy(HttpApi, {
   construct(target, args) {
     const instance = Reflect.construct(target, args);
     instance.doCall = httpApiDoCall.bind(instance);
-
     return instance;
   },
 });
 
 class ToncoreAdapter extends TonClient {
-  // #api: any;
-  // prettier-ignore
   constructor({
     apiKey,
     network,
@@ -62,29 +97,12 @@ class ToncoreAdapter extends TonClient {
     super({
       endpoint: "",
     });
-    this.api = new ProxiedHttp(
-      // for maintainers: make sure the user cannot take control of the string before "@@METHOD@@"
-      `https://${network}-rpc.tonxapi.com/v2/api/@@METHOD@@/${apiKey}`,
-      {
-        adapter: async (config) => {
-          const adapter = axios.getAdapter("http");
-          config.headers = config.headers.concat({
-            "x-source": "toncore-adapter",
-            "x-adapter-version": version,
-          });
-          const r = await adapter(config);
-          if (r.status !== 200) {
-            throw r;
-          }
 
-          r.data = JSON.stringify({
-            ...JSON.parse(r.data),
-            ok: true,
-          });
-          return r;
-        },
-      }
-    );
+    const endpoint = `https://${network}-rpc.tonxapi.com/v2/api/@@METHOD@@/${apiKey}`;
+
+    this.api = new ProxiedHttp(endpoint, {
+      timeout: 10000
+    });
   }
 }
 

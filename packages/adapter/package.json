@@ -1,14 +1,9 @@
 {
   "name": "@tonx/adapter",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "private": false,
   "publishConfig": {
     "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/frigatebird-studio/TONX.js.git",
-    "directory": "packages/adapter"
   },
   "main": "./index.cjs",
   "type": "module",
@@ -20,9 +15,9 @@
   },
   "types": "./index.d.ts",
   "dependencies": {
-    "@ton/core": "^0.56.3",
+    "@ton/core": "^0.59.0",
     "@ton/crypto": "^3.2.0",
-    "@ton/ton": "^13.11.1",
+    "@ton/ton": "^15.1.0",
     "axios": "^1.7.1",
     "tonweb": "^0.0.66",
     "zod": "^3.23.8"

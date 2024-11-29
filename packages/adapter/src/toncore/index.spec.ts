@@ -1,5 +1,5 @@
 import { Address, TonClient } from "@ton/ton";
-import axios, { AxiosError, type AxiosAdapter } from "axios";
+import axios, { type AxiosAdapter } from "axios";
 import ToncoreAdapter from "./index";
 
 const network = "mainnet";
@@ -43,8 +43,8 @@ describe("ToncoreAdapter", () => {
     // @ts-expect-error: xxx is not of Address type
     const p = tonClient.getBalance("xxx");
 
-    await p.catch((err: AxiosError) => {
-      expect(err).toBeInstanceOf(AxiosError);
+    await p.catch((err) => {
+      expect(err).toBeInstanceOf(Error);
       expect(err.response).toBeDefined();
       expect(err.response!.data).toMatchObject({ ok: false });
     });
@@ -53,7 +53,6 @@ describe("ToncoreAdapter", () => {
   itCond("can get the balance given an address", async () => {
     const balance = await tonClient.getBalance(addr);
 
-    expect(axiosHttpAdapter.mock.lastCall![0].headers.get("x-source") == "toncore-adapter");
     expect(balance).toBeGreaterThan(0);
   });
 
