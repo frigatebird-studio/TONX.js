@@ -46,13 +46,15 @@ type GetJettonMastersParams = {
 type GetJettonTransfersParams = {
   address?: string;
   direction?: "in" | "out" | "both";
-  start_lt?: number;
   end_lt?: number;
+  end_utime?: number;
+  jetton_master?: string;
+  jetton_wallet?: string;
   limit?: number;
   offset?: number;
   sort?: "ASC" | "DESC";
+  start_lt?: number;
   start_utime?: number;
-  end_utime?: number;
 };
 
 type GetJettonWalletsParams = {
@@ -80,7 +82,6 @@ type GetNftCollectionsParams = {
 };
 
 type GetNftItemsParams = {
-  address?: string;
   collection_address?: string;
   limit?: number;
   offset?: number;
@@ -116,7 +117,7 @@ type GetAddressInformationParams = {
 type GetAddressStateParams = {
   address: string;
 };
-
+//TODO
 type GetBlockHeaderParams = {
   workchain: number;
   shard: string;
