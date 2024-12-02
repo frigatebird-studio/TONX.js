@@ -1,11 +1,18 @@
 # TONX.js
 
-A simple developer tool for Ton ecosystem which contains specialized function with [TONX](https://tonxapi.com/) rpc provider.
+TONX.js SDK (`@tonx/core`) makes onboarding to the TON blockchain seamless with TON API tools, leveraging the power of [TONX API](https://tonxapi.com/) to help you launch your dApp quickly.
+
+Whether you're new to the TON ecosystem or an experienced developer, TONX.js simplifies the process and gets you started effortlessly.
+
+For detailed usage instructions and a quickstart guide, visit the https://docs.tonxapi.com/docs/welcome-to-ton-api. To explore the full range of TON API endpoints provided by tonxapi.com, refer to the [TON APIs Reference Overview](https://docs.tonxapi.com/reference/ton-api-overview).
+
 
 ## Features
 
-- TONX rpc method
-- Signed typed data
+- JSON-RPC method powered by the TONX Supernode with 99.99% uptime, precise indexing, and ultra-low latency
+- Full integration with [TONX API](https://tonxapi.com/) endpoints
+
+In addition, the [TONX.js Adapter (@tonx/adapter)](https://www.npmjs.com/package/@tonx/adapter) allows for an easy transition from popular TON client libraries like [@ton/ton](https://github.com/ton-org/ton), [TonWeb](https://github.com/toncenter/tonweb), and [TonClient4](https://github.com/ton-org/ton/blob/master/src/client/TonClient4.ts). With just a few code changes, you can seamlessly integrate with [TONX API](https://tonxapi.com/).
 
 ## Install
 
@@ -13,9 +20,9 @@ A simple developer tool for Ton ecosystem which contains specialized function wi
 npm install @tonx/core
 ```
 
-If you want to use TONX's rich function to build up your dapp. You can [register](https://auth.tonxapi.com/signup) an account and get a free API key.
+To access the full features of [TONX API](https://tonxapi.com/), including advanced tools, [register here](https://auth.tonxapi.com/signup) for a free TON API key.
 
-There are some basic structures for sdk development.
+There are some basic structures for TON SDK development.
 
 ## Example
 
@@ -32,9 +39,13 @@ const res = await client.getConsensusBlock();
 console.log(res);
 ```
 
-## Documents
+## Documentation & Resources
 
-[Documentation](https://docs.tonxapi.com/docs/welcome-to-tonxapi)
+- [TONX API](https://tonxapi.com/)
+- [API Documentation](https://docs.tonxapi.com/docs/welcome-to-ton-api)
+- [TON APIs Reference Overview](https://docs.tonxapi.com/reference/ton-api-overview)
+- [Quickstart Guide](https://docs.tonxapi.com/docs/ton-api-quickstart-guide)
+- [Dashboard Overview](https://docs.tonxapi.com/docs/dashboard-overview)
 
 ## License
 
