@@ -3,23 +3,25 @@ import { JsonRpcProvider } from "./provider-jsonrpc";
 import type { JsonRpcApiProviderOptions } from "./provider-jsonrpc";
 import { CreateAxiosDefaults } from "axios";
 import { RunAction } from "./abstract-provider";
+import { Network } from "~core/types/network";
 
 type GetAccountBalanceParams = {
   address: string;
 };
+
 type GetTransactionsParams = {
-  workchain?: number;
-  shard?: string;
-  seqno?: number;
   account?: string;
-  hash?: string;
-  start_utime?: number;
-  end_utime?: number;
-  start_lt?: number;
   end_lt?: number;
-  sort?: string;
+  end_utime?: number;
+  hash?: string;
   limit?: number;
   offset?: number;
+  seqno?: number;
+  shard?: string;
+  sort?: string;
+  start_lt?: number;
+  start_utime?: number;
+  workchain?: number;
 };
 
 type GetJettonBurnsParams = {
@@ -45,13 +47,15 @@ type GetJettonMastersParams = {
 type GetJettonTransfersParams = {
   address?: string;
   direction?: "in" | "out" | "both";
-  start_lt?: number;
   end_lt?: number;
+  end_utime?: number;
+  jetton_master?: string;
+  jetton_wallet?: string;
   limit?: number;
   offset?: number;
   sort?: "ASC" | "DESC";
+  start_lt?: number;
   start_utime?: number;
-  end_utime?: number;
 };
 
 type GetJettonWalletsParams = {
@@ -79,7 +83,6 @@ type GetNftCollectionsParams = {
 };
 
 type GetNftItemsParams = {
-  address?: string;
   collection_address?: string;
   limit?: number;
   offset?: number;
@@ -117,11 +120,11 @@ type GetAddressStateParams = {
 };
 
 type GetBlockHeaderParams = {
-  workchain: number;
-  shard: string;
-  seqno: number;
-  root_hash?: string;
   file_hash?: string;
+  root_hash?: string;
+  seqno: number;
+  shard: string;
+  workchain: number;
 };
 
 type GetBlockTransactionsParams = {
@@ -157,91 +160,133 @@ type SendMessageParams = {
   boc: string;
 };
 
+type GetBocStatusParams = {
+  boc: string;
+}
+
+type VerifyBocParams = {
+  boc: string;
+}
+
+type RadixConversionParams = {
+  base: string;
+  number: string;
+}
+
+type BinaryConversionParams = {
+  ascii: string;
+  base64?: string;
+  base64url?: string;
+  hexadecimal?: string;
+}
+
+type DetectAddressParams = {
+  address: string;
+}
+
 type TONXRunAction =
   | RunAction
   | {
-      method: "getAccountBalance";
-      params: GetAccountBalanceParams;
-    }
+    method: "getAccountBalance";
+    params: GetAccountBalanceParams;
+  }
   | {
-      method: "getTransactions";
-      params: GetTransactionsParams;
-    }
+    method: "getTransactions";
+    params: GetTransactionsParams;
+  }
   | {
-      method: "getJettonBurns";
-      params: GetJettonBurnsParams;
-    }
+    method: "getJettonBurns";
+    params: GetJettonBurnsParams;
+  }
   | {
-      method: "getJettonMasters";
-      params: GetJettonMastersParams;
-    }
+    method: "getJettonMasters";
+    params: GetJettonMastersParams;
+  }
   | {
-      method: "getJettonTransfers";
-      params: GetJettonTransfersParams;
-    }
+    method: "getJettonTransfers";
+    params: GetJettonTransfersParams;
+  }
   | {
-      method: "getJettonWallets";
-      params: GetJettonWalletsParams;
-    }
+    method: "getJettonWallets";
+    params: GetJettonWalletsParams;
+  }
   | {
-      method: "getMessages";
-      params: GetMessagesParams;
-    }
+    method: "getMessages";
+    params: GetMessagesParams;
+  }
   | {
-      method: "getNftCollections";
-      params: GetNftCollectionsParams;
-    }
+    method: "getNftCollections";
+    params: GetNftCollectionsParams;
+  }
   | {
-      method: "getNftItems";
-      params: GetNftItemsParams;
-    }
+    method: "getNftItems";
+    params: GetNftItemsParams;
+  }
   | {
-      method: "getNftTransfers";
-      params: GetNftTransfersParams;
-    }
+    method: "getNftTransfers";
+    params: GetNftTransfersParams;
+  }
   | {
-      method: "estimateFee";
-      params: EstimateFeeParams;
-    }
+    method: "estimateFee";
+    params: EstimateFeeParams;
+  }
   | {
-      method: "getAddressInformation";
-      params: GetAddressInformationParams;
-    }
+    method: "getAddressInformation";
+    params: GetAddressInformationParams;
+  }
   | {
-      method: "getAddressState";
-      params: GetAddressStateParams;
-    }
+    method: "getAddressState";
+    params: GetAddressStateParams;
+  }
   | {
-      method: "getBlockHeader";
-      params: GetBlockHeaderParams;
-    }
+    method: "getBlockHeader";
+    params: GetBlockHeaderParams;
+  }
   | {
-      method: "getBlockTransactions";
-      params: GetBlockTransactionsParams;
-    }
+    method: "getBlockTransactions";
+    params: GetBlockTransactionsParams;
+  }
   | {
-      method: "getConsensusBlock";
-    }
+    method: "getConsensusBlock";
+  }
   | {
-      method: "getExtendedAddressInformation";
-      params: GetExtendedAddressInformationParams;
-    }
+    method: "getExtendedAddressInformation";
+    params: GetExtendedAddressInformationParams;
+  }
   | {
-      method: "getMasterchainBlockSignatures";
-      params: GetMasterchainBlockSignaturesParams;
-    }
+    method: "getMasterchainBlockSignatures";
+    params: GetMasterchainBlockSignaturesParams;
+  }
   | {
-      method: "getTokenData";
-      params: GetTokenDataParams;
-    }
+    method: "getTokenData";
+    params: GetTokenDataParams;
+  }
   | {
-      method: "runGetMethod";
-      params: RunGetMethodParams;
-    }
+    method: "runGetMethod";
+    params: RunGetMethodParams;
+  }
   | {
-      method: "sendMessage";
-      params: SendMessageParams;
-    };
+    method: "sendMessage";
+    params: SendMessageParams;
+  }
+  | {
+    method: "getBocStatus";
+    params: GetBocStatusParams;
+  } | {
+    method: "verifyBoc";
+    params: VerifyBocParams;
+  } | {
+    method: "radixConversion";
+    params: RadixConversionParams;
+  } | {
+    method: "binaryConversion";
+    params: BinaryConversionParams;
+  } | {
+    method: "detectAddress";
+    params: DetectAddressParams;
+  } | {
+    method: "getMasterchainInfo",
+  }
 
 export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
   apiKey: string;
@@ -250,16 +295,48 @@ export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
 
 const version = "v2";
 export class TONXJsonRpcProvider extends JsonRpcProvider {
+  private apiKey: string;
+  private network: Network;
+  private httpClientOptions?: CreateAxiosDefaults;
+
   constructor(options: TONXJsonRpcProviderOptions) {
     super();
     const { network, apiKey, httpClientOptions } = options;
+    this.apiKey = apiKey;
+    this.network = network;
+    this.httpClientOptions = httpClientOptions;
+    this.initDefaultEndpoint();
+  }
+
+  private initDefaultEndpoint() {
     this.init({
-      network,
+      network: this.network,
       httpFetchClient: new HttpFetchClient({
-        baseURL: `https://${network}-rpc.tonxapi.com/${version}/json-rpc/${apiKey}`,
-        ...httpClientOptions,
+        baseURL: `https://${this.network}-rpc.tonxapi.com/${version}/json-rpc/${this.apiKey}`,
+        ...this.httpClientOptions,
       }),
     });
+  }
+
+  private async performWithLabsEndpoint(action: TONXRunAction): Promise<any> {
+    const labsClient = new HttpFetchClient({
+      baseURL: `https://${this.network}-rpc.tonxapi.com/${version}/labs/${this.apiKey}`,
+      ...this.httpClientOptions,
+    });
+
+    const request = this.getRpcRequest(action);
+    if (!request) {
+      throw new Error(`Method ${action.method} not implemented`);
+    }
+
+    const response = await labsClient.client.post("", {
+      id: 1,
+      jsonrpc: "2.0",
+      method: request.method,
+      params: request.params
+    });
+
+    return response.data.result;
   }
 
   getRpcRequest(
@@ -314,6 +391,18 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
         return { method: "runGetMethod", params: action.params };
       case "sendMessage":
         return { method: "sendMessage", params: action.params };
+      case "getBocStatus":
+        return { method: "getBocStatus", params: action.params };
+      case "verifyBoc":
+        return { method: "verifyBoc", params: action.params };
+      case "radixConversion":
+        return { method: "radixConversion", params: action.params };
+      case "binaryConversion":
+        return { method: "binaryConversion", params: action.params };
+      case "detectAddress":
+        return { method: "detectAddress", params: action.params };
+      case "getMasterchainInfo":
+        return { method: "getMasterchainInfo", params: {} }
       default:
         return super.getRpcRequest(action as RunAction);
     }
@@ -439,28 +528,74 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
       params: { address },
     });
   }
+
   async getMasterchainBlockSignatures(seqno: number): Promise<any> {
     return await this._perform({
       method: "getMasterchainBlockSignatures",
       params: { seqno },
     });
   }
+
   async getTokenData(address: string): Promise<any> {
     return await this._perform({
       method: "getTokenData",
       params: { address },
     });
   }
+
   async runGetMethod(params: RunGetMethodParams): Promise<any> {
     return await this._perform({
       method: "runGetMethod",
       params,
     });
   }
+
   async sendMessage(boc: string): Promise<any> {
     return await this._perform({
       method: "sendMessage",
       params: { boc },
+    });
+  }
+
+  async getBocStatus(boc: string): Promise<any> {
+    return await this.performWithLabsEndpoint({
+      method: "getBocStatus",
+      params: { boc },
+    });
+  }
+
+  async verifyBoc(boc: string): Promise<any> {
+    return await this.performWithLabsEndpoint({
+      method: "verifyBoc",
+      params: { boc },
+    });
+  }
+
+  async radixConversion(params: RadixConversionParams): Promise<any> {
+    return await this.performWithLabsEndpoint({
+      method: "radixConversion",
+      params
+    });
+  }
+
+  async binaryConversion(params: BinaryConversionParams): Promise<any> {
+    return await this.performWithLabsEndpoint({
+      method: "binaryConversion",
+      params
+    });
+  }
+
+  async detectAddress(address: string): Promise<any> {
+    return await this.performWithLabsEndpoint({
+      method: "detectAddress",
+      params: { address }
+    });
+  }
+
+  async getMasterchainInfo(): Promise<any> {
+    return await this._perform({
+      method: "getMasterchainInfo",
+      params: {},
     });
   }
 }
