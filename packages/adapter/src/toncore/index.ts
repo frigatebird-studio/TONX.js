@@ -4,11 +4,14 @@ import { z } from "zod";
 import { isPostMethod, appendSearchParam } from "../common";
 
 async function httpApiDoCall<T>(this: HttpApi, method: string, body: any, codec: z.ZodType<T>) {
+  const parameters = (this as any).parameters;
+  const apiKey = parameters.apiKey;
+
   const headers = {
     "Content-Type": "application/json",
+    "API_KEY": apiKey
   };
 
-  const parameters = (this as any).parameters;
   const axiosInstance = axios.create({
     headers,
     timeout: parameters.timeout || 10000,
@@ -98,10 +101,11 @@ class ToncoreAdapter extends TonClient {
       endpoint: "",
     });
 
-    const endpoint = `https://${network}-rpc.tonxapi.com/v2/api/@@METHOD@@/${apiKey}`;
+    const endpoint = `https://${network}-rpc.tonxapi.com/migration/ton-center/@@METHOD@@`;
 
     this.api = new ProxiedHttp(endpoint, {
-      timeout: 10000
+      timeout: 10000,
+      apiKey
     });
   }
 }
