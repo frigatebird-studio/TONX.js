@@ -4,24 +4,37 @@ import { version } from "../../package.json";
 
 // @ts-expect-error: overriding the private method `sendImpl`
 class TonWebWrappedHttpProvider extends TonWeb.HttpProvider {
-  constructor(props: ConstructorParameters<typeof TonWeb.HttpProvider>[0]) {
+  private apiKey: string;
+
+  constructor(props: ConstructorParameters<typeof TonWeb.HttpProvider>[0], apiKey: string) {
     super(props);
+    this.apiKey = apiKey;
   }
+
   override sendImpl = async (apiUrl: string, request: any) => {
     const method = request.method;
     const endpoint = apiUrl.replace("@@METHOD@@", method);
     const shouldSendPost = isPostMethod(method);
+
+    const headers = {
+      "Content-Type": "application/json",
+      "API_KEY": this.apiKey
+    };
 
     let call: ReturnType<typeof fetch>;
 
     if (shouldSendPost) {
       call = fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(request.params),
       });
     } else {
-      call = fetch(appendSearchParam(endpoint, request.params));
+      const url = appendSearchParam(endpoint, request.params);
+      call = fetch(url, {
+        method: "GET",
+        headers: headers
+      });
     }
 
     return call
@@ -31,7 +44,6 @@ class TonWebWrappedHttpProvider extends TonWeb.HttpProvider {
 }
 
 class TonWebAdapter extends TonWeb {
-  // prettier-ignore
   constructor({
     network,
     apiKey,
@@ -42,10 +54,11 @@ class TonWebAdapter extends TonWeb {
     super(
       //@ts-ignore
       new TonWebWrappedHttpProvider(
-        // for maintainers: make sure the user cannot take control of the string before "@@METHOD@@"
-        `https://${network}-rpc.tonxapi.com/v2/api/@@METHOD@@/${apiKey}`
+        `https://${network}-rpc.tonxapi.com/migration/ton-center/@@METHOD@@`,
+        apiKey
       )
     );
   }
 }
+
 export default TonWebAdapter;

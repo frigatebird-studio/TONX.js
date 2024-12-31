@@ -9,7 +9,7 @@ export function getJsonRpcUrl(network: string, apiKey: string) {
 }
 
 export function getRestUrl(path: string, network: string, apiKey: string) {
-    return `${getDomain(network)}/v2/api/${path}/${apiKey}`
+    return `${getDomain(network)}/migration/ton-center${path}`
 }
 
 export function convertHexShardToSignedNumberStr(hexShard: string) {
