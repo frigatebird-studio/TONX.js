@@ -352,7 +352,7 @@ class TonClient4Adapter {
     if (!send.success) {
         throw Error('Mailformed response');
     }
-    return { status: res.data.status };
+    return { status: send.data.status };
   }
 
   /**
