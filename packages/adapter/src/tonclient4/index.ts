@@ -1,4 +1,4 @@
-import { Address, Contract, openContract, StateInit, TupleItem, Transaction, Cell, loadTransaction, serializeTuple, parseTuple, TupleReader  } from "@ton/core";
+import { Address, Contract, openContract, StateInit, TupleItem, Transaction, Cell, loadTransaction, serializeTuple, parseTuple, TupleReader } from "@ton/core";
 import { version } from "../../package.json";
 import { getJsonRpcUrl, getRestUrl, getTonhubDomain, toUrlSafe } from './utils'
 import {
@@ -82,13 +82,14 @@ class TonClient4Adapter {
     return response.json();
   }
 
-  async sendTonhubRequest(path: string, method: 'GET' | 'POST' | 'UPDATE' | 'DELETE', params?: any) {
+  async sendToAPIRequest(path: string, method: 'GET' | 'POST' | 'UPDATE' | 'DELETE', params?: any) {
     const endpoint = getTonhubDomain(this.network);
     let url = `${endpoint}${path}`
     const response = await fetch(url, {
       method,
       headers: {
         'Content-Type': 'application/json',
+        'API_KEY': this.apiKey,
       },
       body: method !== 'GET' ? JSON.stringify(params) : undefined,
     });
@@ -119,7 +120,7 @@ class TonClient4Adapter {
     /*
     * We can use our tonx api after the shards api has been fixed TON-2746
     */
-    const result = await this.sendTonhubRequest('/block/' + seqno, 'GET');
+    const result = await this.sendToAPIRequest('/block/' + seqno, 'GET');
 
 
     let block = blockCodec.safeParse(result);
@@ -139,16 +140,16 @@ class TonClient4Adapter {
      */
   async getBlockByUtime(ts: number) {
     // tonx shard api doesn't support get by utime
-    const result = await this.sendTonhubRequest('/block/utime/' + ts, 'GET');
+    const result = await this.sendToAPIRequest('/block/utime/' + ts, 'GET');
     let block = blockCodec.safeParse(result);
     if (!block.success) {
-        throw Error('Mailformed response');
+      throw Error('Mailformed response');
     }
     if (!block.data.exist) {
-        throw Error('Block is out of scope');
+      throw Error('Block is out of scope');
     }
     return block.data.block;
-}
+  }
 
   /**
      * Get block info by seqno
@@ -160,7 +161,7 @@ class TonClient4Adapter {
     /*
     * To support the tonclient4 interface get account by seqNo, we need to support it from our tonx api response in future
     */
-    const result = await this.sendTonhubRequest('/block/' + seqno + '/' + address.toString({ urlSafe: true }), 'GET');
+    const result = await this.sendToAPIRequest('/block/' + seqno + '/' + address.toString({ urlSafe: true }), 'GET');
 
     let account = accountCodec.safeParse(result);
     if (!account.success) {
@@ -181,7 +182,7 @@ class TonClient4Adapter {
 
     let account = accountLiteCodec.safeParse(result);
     if (!account.success) {
-        throw Error('Mailformed response');
+      throw Error('Mailformed response');
     }
 
     return account.data;
@@ -213,7 +214,7 @@ class TonClient4Adapter {
 
     const changed = changedCodec.safeParse(result);
     if (!changed.success) {
-        throw Error('Mailformed response');
+      throw Error('Mailformed response');
     }
     return changed.data;
   }
@@ -228,7 +229,7 @@ class TonClient4Adapter {
   async getAccountTransactions(address: Address, lt: bigint, hash: Buffer) {
 
     const path = '/account/' + address.toString({ urlSafe: true }) + '/tx/' + lt.toString(10) + '/' + toUrlSafe(hash.toString('base64'));
-    const tonhubData = await this.sendTonhubRequest(path, 'GET');
+    const tonhubData = await this.sendToAPIRequest(path, 'GET');
 
     /*
     * To support the tonclient4 interface (raw: Cell, outMessages: Dictionary, etc...), we need to build their boc format from our tonx api response in future
@@ -242,20 +243,20 @@ class TonClient4Adapter {
     const data = transactions.data;
     let tx: {
       block: {
-          workchain: number;
-          seqno: number;
-          shard: string;
-          rootHash: string;
-          fileHash: string;
+        workchain: number;
+        seqno: number;
+        shard: string;
+        rootHash: string;
+        fileHash: string;
       },
       tx: Transaction
     }[] = [];
     let cells = Cell.fromBoc(Buffer.from(data.boc, 'base64'));
     for (let i = 0; i < data.blocks.length; i++) {
-        tx.push({
-            block: data.blocks[i],
-            tx: loadTransaction(cells[i].beginParse())
-        });
+      tx.push({
+        block: data.blocks[i],
+        tx: loadTransaction(cells[i].beginParse())
+      });
     }
     return tx;
   }
@@ -271,7 +272,7 @@ class TonClient4Adapter {
   async getAccountTransactionsParsed(address: Address, lt: bigint, hash: Buffer, count: number = 20) {
     const path = appendSearchParam('/account/' + address.toString({ urlSafe: true }) + '/tx/parsed/' + lt.toString(10) + '/' + toUrlSafe(hash.toString('base64')), { count: count.toString() });
 
-    const tonhubData = await this.sendTonhubRequest(path, 'GET');
+    const tonhubData = await this.sendToAPIRequest(path, 'GET');
 
     /*
     * To support the tonclient4 interface, we need to provide missing data in our tonx api response in future
@@ -279,11 +280,11 @@ class TonClient4Adapter {
     const parsedTransactionsRes = parsedTransactionsCodec.safeParse(tonhubData);
 
     if (!parsedTransactionsRes.success) {
-        throw Error('Mailformed response');
+      throw Error('Mailformed response');
     }
 
     return parsedTransactionsRes.data as ParsedTransactions;
-}
+  }
 
   /**
      * Get network config
@@ -294,9 +295,9 @@ class TonClient4Adapter {
   async getConfig(seqno: number, ids?: number[]) {
     let tail = '';
     if (ids && ids.length > 0) {
-        tail = '/' + [...ids].sort().join(',');
+      tail = '/' + [...ids].sort().join(',');
     }
-    const result = await this.sendTonhubRequest('/block/' + seqno + '/config' + tail, 'GET');
+    const result = await this.sendToAPIRequest('/block/' + seqno + '/config' + tail, 'GET');
 
     /*
     * To support the tonclient4 interface (address, globalBalance), we need to support format from our tonx api response in future
@@ -304,7 +305,7 @@ class TonClient4Adapter {
 
     const config = configCodec.safeParse(result);
     if (!config.success) {
-        throw Error('Mailformed response');
+      throw Error('Mailformed response');
     }
     return config.data;
   }
@@ -323,7 +324,7 @@ class TonClient4Adapter {
     */
     const tail = args && args.length > 0 ? '/' + toUrlSafe(serializeTuple(args).toBoc({ idx: false, crc32: false }).toString('base64')) : '';
     const path = '/block/' + seqno + '/' + address.toString({ urlSafe: true }) + '/run/' + encodeURIComponent(name) + tail;
-    const res = await this.sendTonhubRequest(path, 'GET');
+    const res = await this.sendToAPIRequest(path, 'GET');
 
     const runMethod = runMethodCodec.safeParse(res);
     if (!runMethod.success) {
@@ -350,7 +351,7 @@ class TonClient4Adapter {
     const data = convertSendMessage(res);
     let send = sendCodec.safeParse(data);
     if (!send.success) {
-        throw Error('Mailformed response');
+      throw Error('Mailformed response');
     }
     return { status: send.data.status };
   }
