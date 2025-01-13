@@ -74,10 +74,8 @@ export function toUrlSafe(src: string) {
 }
 
 export function getTonhubDomain(network: Network) {
-    if (network === 'mainnet') {
-        return 'https://mainnet-v4.tonhubapi.com';
-    } else if (network === 'testnet') {
-        return 'https://testnet-v4.tonhubapi.com';
+    if (network === 'mainnet' || network === 'testnet') {
+        return `https://${network}-rpc.tonxapi.com/migration/ton-http-api`;
     } else {
         throw new Error('Invalid network');
     }
