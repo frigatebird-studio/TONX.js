@@ -184,6 +184,44 @@ type DetectAddressParams = {
   address: string;
 }
 
+type GetTgBTCTransfersParams = {
+  address: string;
+  /** Jetton wallet address. Must be sent in hex, base64 and base64url forms */
+  jetton_wallet?: string;
+  /** Direction transactions */
+  direction?: 'in' | 'out' | 'both';
+  /** Query transactions with generation UTC timestamp, Must be sent with end_utime */
+  start_utime?: number;
+  /** Query transactions with generation UTC timestamp, Must be sent with start_utime */
+  end_utime?: number;
+  /** Transaction lt, Must be sent with end_lt */
+  start_lt?: number;
+  /** Transaction lt, Must be sent with start_lt */
+  end_lt?: number;
+  /** Sort transactions by lt */
+  sort?: 'ASC' | 'DESC';
+  /** Skip first N rows. Use with limit to batch read (1-256) */
+  limit?: number;
+  /** Sort transactions by lt */
+  offset?: number;
+}
+
+type GetTgBTCTransfersResponse = {
+  query_id: string;
+  source: string;
+  destination: string;
+  amount: string;
+  source_wallet: string;
+  jetton_master: string;
+  transaction_hash: string;
+  transaction_lt: string;
+  transaction_now: number;
+  response_destination?: string;
+  custom_payload?: string;
+  forward_ton_amount: string;
+  forward_payload?: string;
+}
+
 type TONXRunAction =
   | RunAction
   | {
@@ -286,6 +324,9 @@ type TONXRunAction =
     params: DetectAddressParams;
   } | {
     method: "getMasterchainInfo",
+  } | {
+    method: "getTgBTCTransfers",
+    params: GetTgBTCTransfersParams;
   }
 
 export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
@@ -403,6 +444,8 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
         return { method: "detectAddress", params: action.params };
       case "getMasterchainInfo":
         return { method: "getMasterchainInfo", params: {} }
+      case "getTgBTCTransfers":
+        return { method: "getTgBTCTransfers", params: action.params }
       default:
         return super.getRpcRequest(action as RunAction);
     }
@@ -596,6 +639,13 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
     return await this._perform({
       method: "getMasterchainInfo",
       params: {},
+    });
+  }
+
+  async getTgBTCTransfers(params: GetTgBTCTransfersParams): Promise<GetTgBTCTransfersResponse[]> {
+    return await this._perform({
+      method: "getTgBTCTransfers",
+      params: params,
     });
   }
 }
