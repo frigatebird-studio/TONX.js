@@ -184,6 +184,12 @@ type DetectAddressParams = {
   address: string;
 }
 
+type GetTgBTCConfigResponse = {
+  jetton_master: string;
+  teleport: string;
+  coordinator: string;
+};
+
 type TONXRunAction =
   | RunAction
   | {
@@ -286,6 +292,8 @@ type TONXRunAction =
     params: DetectAddressParams;
   } | {
     method: "getMasterchainInfo",
+  } | {
+    method: "getTgBTCConfig";
   }
 
 export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
@@ -403,6 +411,8 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
         return { method: "detectAddress", params: action.params };
       case "getMasterchainInfo":
         return { method: "getMasterchainInfo", params: {} }
+      case "getTgBTCConfig":
+        return { method: "getTgBTCConfig", params: {} };
       default:
         return super.getRpcRequest(action as RunAction);
     }
@@ -596,6 +606,13 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
     return await this._perform({
       method: "getMasterchainInfo",
       params: {},
+    });
+  }
+
+  async getTgBTCConfig(): Promise<GetTgBTCConfigResponse> {
+    return await this._perform({
+      method: "getTgBTCConfig",
+      params: {}
     });
   }
 }
