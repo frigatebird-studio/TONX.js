@@ -292,7 +292,7 @@ type TONXRunAction =
   } | {
     method: "getMasterchainInfo",
   } | {
-    method: "getTgBTCMasterAddress",
+    method: "getTgBTCMasterAddress";
   }
 
 export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
