@@ -4,6 +4,7 @@ import type { JsonRpcApiProviderOptions } from "./provider-jsonrpc";
 import { CreateAxiosDefaults } from "axios";
 import { RunAction } from "./abstract-provider";
 import { Network } from "~core/types/network";
+import { Address } from "@ton/core";
 
 type GetAccountBalanceParams = {
   address: string;
@@ -182,6 +183,19 @@ type BinaryConversionParams = {
 
 type DetectAddressParams = {
   address: string;
+}
+
+type GetTgBTCWalletAddressByOwnerParams = {
+  owner_address: string;
+}
+
+type GetTgBTCWalletAddressByOwnerResponse = {
+  address: string;
+  address_friendly: string;
+  owner: string;
+  owner_friendly: string;
+  jetton: string;
+  jetton_friendly: string;
 }
 
 type TONXRunAction =
@@ -403,6 +417,12 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
         return { method: "detectAddress", params: action.params };
       case "getMasterchainInfo":
         return { method: "getMasterchainInfo", params: {} }
+      case "getTgBTCWalletAddressByOwner":
+        return {
+          method: "getTgBTCWalletAddressByOwner",
+          params: action.params,
+        };
+      case "getTgBTCWalletAddressByJetton":
       default:
         return super.getRpcRequest(action as RunAction);
     }
@@ -596,6 +616,13 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
     return await this._perform({
       method: "getMasterchainInfo",
       params: {},
+    });
+  }
+
+  async getTgBTCWalletAddressByOwner(params: GetTgBTCWalletAddressByOwnerParams): Promise<GetTgBTCWalletAddressByOwnerResponse> {
+    return await this._perform({
+      method: "getTgBTCWalletAddressByOwner",
+      params: params,
     });
   }
 }
