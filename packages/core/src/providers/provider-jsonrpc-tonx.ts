@@ -306,8 +306,8 @@ type TONXRunAction =
   } | {
     method: "getMasterchainInfo",
   } | {
-    method: "getTgBTCHolders",
-    params: GetTgBTCHoldersParams,
+    method: "getTgBTCHolders";
+    params: GetTgBTCHoldersParams;
   }
 
 export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
