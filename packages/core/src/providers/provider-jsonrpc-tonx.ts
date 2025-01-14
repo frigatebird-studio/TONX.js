@@ -184,6 +184,42 @@ type DetectAddressParams = {
   address: string;
 }
 
+/**
+ * @param {string} address - TON address of the tgBTC owner (required when jetton_wallet is absent) (base64, base64Url, or hexadecimal)
+ * @param {string} jetton_wallet - TON address of the tgBTC Jetton Wallet (required when address is absent) (base64, base64Url, or hexadecimal)
+ * @param {number} start_utime - The beginning transaction Unix timestamp (required when end_utime is used)
+ * @param {number} end_utime - The ending transaction Unix timestamp (required when start_utime is used)
+ * @param {number} start_lt - The beginning transaction logical time (LT) (required when end_lt is used)
+ * @param {number} end_lt - The ending transaction logical time (LT) (required when start_lt is used)
+ * @param {"ASC" | "DESC"} sort - Enable sorting on responses by logical time (LT)
+ * @param {number} limit - The number of tgBTC burn messages you want to see
+ * @param {number} offset - The number of tgBTC burn messages skipped
+ */
+type GetTgBTCBurnsParams = {
+  address?: string;
+  jetton_wallet?: string;
+  start_utime?: number;
+  end_utime?: number;
+  start_lt?: number;
+  end_lt?: number;
+  sort?: "ASC" | "DESC";
+  limit?: number;
+  offset?: number;
+}
+
+type GetTgBTCBurnsResponse = {
+  query_id: string;
+  owner: string;
+  jetton_master: string;
+  jetton_wallet: string;
+  amount: string;
+  transaction_hash: string;
+  transaction_lt: string;
+  transaction_now: number;
+  response_destination?: string;
+  custom_payload?: string;
+}
+
 type TONXRunAction =
   | RunAction
   | {
@@ -286,6 +322,9 @@ type TONXRunAction =
     params: DetectAddressParams;
   } | {
     method: "getMasterchainInfo",
+  } | {
+    method: "getTgBTCBurns";
+    params: GetTgBTCBurnsParams;
   }
 
 export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
@@ -403,6 +442,8 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
         return { method: "detectAddress", params: action.params };
       case "getMasterchainInfo":
         return { method: "getMasterchainInfo", params: {} }
+      case "getTgBTCBurns":
+        return { method: "getTgBTCBurns", params: action.params };
       default:
         return super.getRpcRequest(action as RunAction);
     }
@@ -596,6 +637,13 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
     return await this._perform({
       method: "getMasterchainInfo",
       params: {},
+    });
+  }
+
+  async getTgBTCBurns(params: GetTgBTCBurnsParams): Promise<GetTgBTCBurnsResponse> {
+    return await this._perform({
+      method: "getTgBTCBurns",
+      params: params,
     });
   }
 }
