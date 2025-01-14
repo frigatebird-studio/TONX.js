@@ -299,7 +299,7 @@ type TONXRunAction =
   } | {
     method: "getMasterchainInfo",
   } | {
-    method: "getTgBTCBalance",
+    method: "getTgBTCBalance";
     params: GetTgBTCBalanceParams;
   }
 
