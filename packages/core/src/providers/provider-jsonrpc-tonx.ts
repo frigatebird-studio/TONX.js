@@ -184,6 +184,19 @@ type DetectAddressParams = {
   address: string;
 }
 
+type GetTgBTCTransferPayload = {
+  amount: number;
+  destination: string;
+  source: string;
+  comment?: string;
+}
+
+type GetTgBTCTransferResponse = {
+  address: string;
+  amount: number;
+  payload: string;
+}
+
 type TgBTCMetaDataResponse = {
   address: string;
   name: string;
@@ -345,6 +358,9 @@ type TONXRunAction =
   } | {
     method: "getMasterchainInfo",
   } | {
+    method: "getTgBTCTransferPayload",
+    params: GetTgBTCTransferPayload;
+  } | {
     method: "getTgBTCTransfers",
     params: GetTgBTCTransfersParams;
   }
@@ -464,6 +480,8 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
         return { method: "detectAddress", params: action.params };
       case "getMasterchainInfo":
         return { method: "getMasterchainInfo", params: {} }
+      case "getTgBTCTransferPayload":
+        return { method: "getTgBTCTransferPayload", params: action.params }
       case "getTgBTCMetaData": {
         return { method: "getTgBTCMetaData", params: {} }
       }
@@ -662,6 +680,13 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
     return await this._perform({
       method: "getMasterchainInfo",
       params: {},
+    });
+  }
+
+  async getTgBTCTransferPayload(params: GetTgBTCTransferPayload): Promise<GetTgBTCTransferResponse> {
+    return await this._perform({
+      method: "getTgBTCTransferPayload",
+      params
     });
   }
 
