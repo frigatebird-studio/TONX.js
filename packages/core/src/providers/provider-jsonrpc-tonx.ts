@@ -184,6 +184,20 @@ type DetectAddressParams = {
   address: string;
 }
 
+type TgBTCMetaDataResponse = {
+  address: string;
+  name: string;
+  symbol: string;
+  total_supply?: string;
+  admin_address?: string;
+  decimals?: string;
+  mintable?: boolean;
+  uri?: string;
+  image?: string;
+  image_data?: number[];
+  description?: string;
+}
+
 type TimeRange = {
   start_utime: number;
   end_utime: number;
@@ -450,6 +464,9 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
         return { method: "detectAddress", params: action.params };
       case "getMasterchainInfo":
         return { method: "getMasterchainInfo", params: {} }
+      case "getTgBTCMetaData": {
+        return { method: "getTgBTCMetaData", params: {} }
+      }
       case "getTgBTCTransfers":
         return { method: "getTgBTCTransfers", params: action.params }
       default:
@@ -644,6 +661,13 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
   async getMasterchainInfo(): Promise<any> {
     return await this._perform({
       method: "getMasterchainInfo",
+      params: {},
+    });
+  }
+
+  async getTgBTCMetaData(): Promise<TgBTCMetaDataResponse> {
+    return await this._perform({
+      method: "getTgBTCMetaData",
       params: {},
     });
   }
