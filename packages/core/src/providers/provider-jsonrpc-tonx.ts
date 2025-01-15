@@ -197,6 +197,64 @@ type GetTgBTCTransferResponse = {
   payload: string;
 }
 
+type TgBTCMetaDataResponse = {
+  address: string;
+  name: string;
+  symbol: string;
+  total_supply?: string;
+  admin_address?: string;
+  decimals?: string;
+  mintable?: boolean;
+  uri?: string;
+  image?: string;
+  image_data?: number[];
+  description?: string;
+}
+
+type TimeRange = {
+  start_utime: number;
+  end_utime: number;
+} | {
+  start_utime?: undefined;
+  end_utime?: undefined;
+}
+
+type LtRange = {
+  start_lt: number;
+  end_lt: number;
+} | {
+  start_lt?: undefined;
+  end_lt?: undefined;
+}
+
+type GetTgBTCTransfersParams = {
+  address: string;
+  jetton_wallet?: string;
+  direction?: 'in' | 'out' | 'both'
+  sort?: 'ASC' | 'DESC';
+  /** Use with limit to batch read (1-256) */
+  limit?: number;
+  /** Skip first N rows*/
+  offset?: number;
+
+} & TimeRange & LtRange
+
+type GetTgBTCTransfersResponse = {
+  query_id: string;
+  source: string;
+  destination: string;
+  amount: string;
+  source_wallet: string;
+  jetton_master: string;
+  transaction_hash: string;
+  transaction_lt: string;
+  transaction_now: number;
+  response_destination?: string;
+  custom_payload?: string;
+  forward_ton_amount: string;
+  forward_payload?: string;
+}
+
 type TONXRunAction =
   | RunAction
   | {
@@ -302,6 +360,9 @@ type TONXRunAction =
   } | {
     method: "getTgBTCTransferPayload",
     params: GetTgBTCTransferPayload;
+  } | {
+    method: "getTgBTCTransfers",
+    params: GetTgBTCTransfersParams;
   }
 
 export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
@@ -421,6 +482,11 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
         return { method: "getMasterchainInfo", params: {} }
       case "getTgBTCTransferPayload":
         return { method: "getTgBTCTransferPayload", params: action.params }
+      case "getTgBTCMetaData": {
+        return { method: "getTgBTCMetaData", params: {} }
+      }
+      case "getTgBTCTransfers":
+        return { method: "getTgBTCTransfers", params: action.params }
       default:
         return super.getRpcRequest(action as RunAction);
     }
@@ -621,6 +687,20 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
     return await this._perform({
       method: "getTgBTCTransferPayload",
       params
+    });
+  }
+
+  async getTgBTCMetaData(): Promise<TgBTCMetaDataResponse> {
+    return await this._perform({
+      method: "getTgBTCMetaData",
+      params: {},
+    });
+  }
+
+  async getTgBTCTransfers(params: GetTgBTCTransfersParams): Promise<GetTgBTCTransfersResponse[]> {
+    return await this._perform({
+      method: "getTgBTCTransfers",
+      params: params,
     });
   }
 }
