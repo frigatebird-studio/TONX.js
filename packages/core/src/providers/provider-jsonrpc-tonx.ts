@@ -4,6 +4,7 @@ import type { JsonRpcApiProviderOptions } from "./provider-jsonrpc";
 import { CreateAxiosDefaults } from "axios";
 import { RunAction } from "./abstract-provider";
 import { Network } from "~core/types/network";
+import { z } from "zod";
 
 type GetAccountBalanceParams = {
   address: string;
@@ -150,10 +151,35 @@ type GetTokenDataParams = {
   address: string;
 };
 
+/**
+ * @param address - TON address of the smart contract you want to execute the `get-method`
+ * @param method - The function name of the `get-method`
+ * @param stack - The input parameter of the `get-method` if it needs
+ */
 type RunGetMethodParams = {
   address: string;
   method: string;
-  stack: [];
+  stack?: Array<["num", number] | ["cell", string] | ["slice", string]>;
+};
+
+/**
+ * @description TON Center V3 style RunGetMethod parameters
+ * @param address - TON address of the smart contract you want to execute the `get-method`
+ * @param method - The function name of the `get-method`
+ * @param stack - The input parameter of the `get-method` if it needs
+ */
+type RunGetMethodV3Params = {
+  address: string;
+  method: string;
+  stack?: Array<{ type: "num" | "cell" | "slice"; value: string; }>;
+};
+
+type RunGetMethodResponse = {
+  exit_code: number;
+  stack: any[];
+  gas_used: number;
+  "@type": string;
+  "@extra": string;
 };
 
 type SendMessageParams = {
@@ -543,11 +569,76 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
     });
   }
 
-  async runGetMethod(params: RunGetMethodParams): Promise<any> {
-    return await this._perform({
-      method: "runGetMethod",
-      params,
-    });
+  async runGetMethod(params: RunGetMethodParams | RunGetMethodV3Params): Promise<RunGetMethodResponse> {
+    const v2Params = z.object({
+      address: z.string(),
+      method: z.string(),
+      stack: z.optional(
+        z.array(
+          z.tuple([z.literal("num"), z.number()])
+            .or(z.tuple([z.literal("cell"), z.string()]))
+            .or(z.tuple([z.literal("slice"), z.string()]))
+        )
+      ),
+    }).safeParse(params);
+
+    if (v2Params.success) {
+      return await this._perform({
+        method: "runGetMethod",
+        params: {
+          address: v2Params.data.address,
+          method: v2Params.data.method,
+          stack: (!v2Params.data.stack) ? [] : v2Params.data.stack.map((eachStack) => {
+            switch (eachStack[0]) {
+              case "num":
+                return ["num", eachStack[1].toString(10)];
+              case "cell":
+                return ["tvm.Cell", eachStack[1]];
+              case "slice":
+                return ["tvm.Slice", eachStack[1]];
+            }
+          }),
+        },
+      });
+    }
+
+    const v3Params = z.object({
+      address: z.string(),
+      method: z.string(),
+      stack: z.optional(
+        z.array(
+          z.object({ type: z.literal("num"), value: z.string() })
+            .or(z.object({ type: z.literal("cell"), value: z.string() }))
+            .or(z.object({ type: z.literal("slice"), value: z.string() }))
+        )
+      ),
+    }).safeParse(params);
+
+    if (v3Params.success) {
+      return await this._perform({
+        method: "runGetMethod",
+        params: {
+          address: v3Params.data.address,
+          method: v3Params.data.method,
+          stack: (!v3Params.data.stack) ? [] : v3Params.data.stack.map((eachStack) => {
+            switch (eachStack.type) {
+              case "num":
+                if (eachStack.value.toLowerCase().startsWith("0x")) {
+                  return ["num", BigInt(eachStack.value.toLowerCase()).toString(10)];
+                } else {
+                  return ["num", eachStack.value]; // decimal number string
+                }
+              case "cell":
+                return ["tvm.Cell", eachStack.value];
+              case "slice":
+                return ["tvm.Slice", eachStack.value];
+            }
+          }),
+        },
+      });
+    }
+
+    throw new Error("Unknown type of params");
   }
 
   async sendMessage(boc: string): Promise<any> {
