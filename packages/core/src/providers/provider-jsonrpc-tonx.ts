@@ -184,6 +184,24 @@ type DetectAddressParams = {
   address: string;
 }
 
+type GetTgBTCBurnsAddress = { address: string; } | { jetton_wallet: string; };
+
+type GetTgBTCBurnsUtime = {
+  start_utime: number;
+  end_utime: number;
+} | {
+  start_utime?: undefined;
+  end_utime?: undefined;
+};
+
+type GetTgBTCBurnsLt = {
+  start_lt: number;
+  end_lt: number;
+} | {
+  start_lt?: undefined;
+  end_lt?: undefined;
+};
+
 /**
  * @param {string} address - TON address of the tgBTC owner (required when jetton_wallet is absent) (base64, base64Url, or hexadecimal)
  * @param {string} jetton_wallet - TON address of the tgBTC Jetton Wallet (required when address is absent) (base64, base64Url, or hexadecimal)
@@ -195,17 +213,10 @@ type DetectAddressParams = {
  * @param {number} limit - The number of tgBTC burn messages you want to see
  * @param {number} offset - The number of tgBTC burn messages skipped
  */
-type GetTgBTCBurnsParams = {
-  address?: string;
-  jetton_wallet?: string;
-  start_utime?: number;
-  end_utime?: number;
-  start_lt?: number;
-  end_lt?: number;
-  sort?: "ASC" | "DESC";
-  limit?: number;
-  offset?: number;
-}
+type GetTgBTCBurnsParams = GetTgBTCBurnsAddress
+  & GetTgBTCBurnsUtime
+  & GetTgBTCBurnsLt
+  & Partial<{ sort: "ASC" | "DESC"; limit: number; offset: number; }>;
 
 type GetTgBTCBurnsResponse = {
   query_id: string;
