@@ -184,27 +184,33 @@ type DetectAddressParams = {
   address: string;
 }
 
+type TimeRange = {
+  start_utime: number;
+  end_utime: number;
+} | {
+  start_utime?: undefined;
+  end_utime?: undefined;
+}
+
+type LtRange = {
+  start_lt: number;
+  end_lt: number;
+} | {
+  start_lt?: undefined;
+  end_lt?: undefined;
+}
+
 type GetTgBTCTransfersParams = {
   address: string;
-  /** Jetton wallet address. Must be sent in hex, base64 and base64url forms */
   jetton_wallet?: string;
-  /** Direction transactions */
-  direction?: 'in' | 'out' | 'both';
-  /** Query transactions with generation UTC timestamp, Must be sent with end_utime */
-  start_utime?: number;
-  /** Query transactions with generation UTC timestamp, Must be sent with start_utime */
-  end_utime?: number;
-  /** Transaction lt, Must be sent with end_lt */
-  start_lt?: number;
-  /** Transaction lt, Must be sent with start_lt */
-  end_lt?: number;
-  /** Sort transactions by lt */
+  direction?: 'in' | 'out' | 'both'
   sort?: 'ASC' | 'DESC';
-  /** Skip first N rows. Use with limit to batch read (1-256) */
+  /** Use with limit to batch read (1-256) */
   limit?: number;
-  /** Sort transactions by lt */
+  /** Skip first N rows*/
   offset?: number;
-}
+
+} & TimeRange & LtRange
 
 type GetTgBTCTransfersResponse = {
   query_id: string;
