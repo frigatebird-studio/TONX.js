@@ -232,27 +232,6 @@ type GetTgBTCBurnsResponse = {
   custom_payload?: string;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 type GetTgBTCWalletAddressByOwnerParams = {
   owner_address: string;
 }
