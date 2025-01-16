@@ -1,3 +1,19 @@
+export type TimeRange = {
+    start_utime: number;
+    end_utime: number;
+} | {
+    start_utime?: undefined;
+    end_utime?: undefined;
+};
+
+export type LtRange = {
+    start_lt: number;
+    end_lt: number;
+} | {
+    start_lt?: undefined;
+    end_lt?: undefined;
+};
+
 export type GetAccountBalanceParams = {
     address: string;
 };
@@ -246,22 +262,6 @@ export type GetTgBTCHoldersResponse = {
 
 export type GetTgBTCBurnsAddress = { address: string; } | { jetton_wallet: string; };
 
-export type GetTgBTCBurnsUtime = {
-    start_utime: number;
-    end_utime: number;
-} | {
-    start_utime?: undefined;
-    end_utime?: undefined;
-};
-
-export type GetTgBTCBurnsLt = {
-    start_lt: number;
-    end_lt: number;
-} | {
-    start_lt?: undefined;
-    end_lt?: undefined;
-};
-
 /**
  * @param {string} address - TON address of the tgBTC owner (required when jetton_wallet is absent) (base64, base64Url, or hexadecimal)
  * @param {string} jetton_wallet - TON address of the tgBTC Jetton Wallet (required when address is absent) (base64, base64Url, or hexadecimal)
@@ -274,8 +274,8 @@ export type GetTgBTCBurnsLt = {
  * @param {number} offset - The number of tgBTC burn messages skipped
  */
 export type GetTgBTCBurnsParams = GetTgBTCBurnsAddress
-    & GetTgBTCBurnsUtime
-    & GetTgBTCBurnsLt
+    & LtRange
+    & TimeRange
     & Partial<{ sort: "ASC" | "DESC"; limit: number; offset: number; }>;
 
 export type GetTgBTCBurnsResponse = {
@@ -330,22 +330,6 @@ export type TgBTCMetaDataResponse = {
     image_data?: number[];
     description?: string;
 }
-
-export type TimeRange = {
-    start_utime: number;
-    end_utime: number;
-} | {
-    start_utime?: undefined;
-    end_utime?: undefined;
-};
-
-export type LtRange = {
-    start_lt: number;
-    end_lt: number;
-} | {
-    start_lt?: undefined;
-    end_lt?: undefined;
-};
 
 export type GetTgBTCTransfersParams = {
     address: string;
