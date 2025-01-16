@@ -185,10 +185,22 @@ type DetectAddressParams = {
   address: string;
 }
 
+/**
+ * @param {string} address - TON address of the owner's Jetton Wallet (base64, base64Url, or hexadecimal)  
+ */
+type GetTgBTCBalanceParams = {
+  address: string;
+};
+
+type GetTgBTCBalanceResponse = {
+  address: string;
+  balance: string;
+};
+
 type GetTgBTCMasterAddressResponse = {
   address: string;
   account_friendly: string;
-}
+};
 
 /**
  * @param {number} limit - The number of tgBTC holders you want to see
@@ -443,6 +455,9 @@ type TONXRunAction =
   } | {
     method: "getMasterchainInfo";
   } | {
+    method: "getTgBTCBalance";
+    params: GetTgBTCBalanceParams;
+  } | {
     method: "getTgBTCMasterAddress";
   } | {
     method: "getTgBTCHolders";
@@ -573,6 +588,8 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
         return { method: "detectAddress", params: action.params };
       case "getMasterchainInfo":
         return { method: "getMasterchainInfo", params: {} };
+      case "getTgBTCBalance":
+        return { method: "getTgBTCBalance", params: action.params };
       case "getTgBTCMasterAddress":
         return { method: "getTgBTCMasterAddress", params: {} };
       case "getTgBTCHolders":
@@ -780,6 +797,13 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
     return await this._perform({
       method: "getMasterchainInfo",
       params: {},
+    });
+  }
+
+  async getTgBTCBalance(params: GetTgBTCBalanceParams): Promise<GetTgBTCBalanceResponse> {
+    return await this._perform({
+      method: "getTgBTCBalance",
+      params: params
     });
   }
 
