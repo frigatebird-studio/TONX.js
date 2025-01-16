@@ -22,9 +22,9 @@ npm install @tonx/core
 
 To access the full features of [TONX API](https://tonxapi.com/), including advanced tools, [register here](https://auth.tonxapi.com/signup) for a free TON API key.
 
-There are some basic structures for TON SDK development.
+## Examples
 
-## Example
+Initialize TONX client and use its features:
 
 ```js
 import { TONXJsonRpcProvider } from "@tonx/core";
@@ -34,9 +34,33 @@ const client = new TONXJsonRpcProvider({
   apiKey: "YOUR_API_KEY",
 });
 
-const res = await client.getConsensusBlock();
+// Get consensus block
+const consensusBlock = await client.getConsensusBlock();
+console.log(consensusBlock);
 
-console.log(res);
+// Get tgBTC Jetton Wallet address by owner
+const tgBTCWallet = await client.getTgBTCWalletAddressByOwner({
+  owner_address: "YOUR_OWNER_ADDRESS"
+});
+console.log(tgBTCWallet)
+
+// Get tgBTC transfers
+const transfers = await client.getTgBTCTransfers({address: "YOUR_ADDRESS"});
+```
+
+```js
+// Create payload for use with TonConnect tgBTC transfers
+const tgBTCTransferPayload = await client.getTgBTCTransferPayload({
+  amount: 1000, // tgBTC Amount
+  destination: "DESTINATION_ADDRESS",
+  source: "YOUR_OWNER_ADDRESS",
+});
+
+// Using in TonConnect
+await tonConnectUI.sendTransaction({
+  validUntil: Math.floor(Date.now() / 1000) + 360,
+  messages: [{ ...tgBTCTransferPayload }],
+});
 ```
 
 ## Documentation & Resources

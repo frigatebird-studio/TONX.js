@@ -1,297 +1,45 @@
-import HttpFetchClient from "~core/utils/http-fetch-client";
-import { JsonRpcProvider } from "./provider-jsonrpc";
-import type { JsonRpcApiProviderOptions } from "./provider-jsonrpc";
 import { CreateAxiosDefaults } from "axios";
+import { z } from "zod";
 import { RunAction } from "./abstract-provider";
 import { Network } from "~core/types/network";
+import HttpFetchClient from "~core/utils/http-fetch-client";
+import { JsonRpcProvider } from "./provider-jsonrpc";
+import {
+  GetTransactionsParams,
+  GetJettonBurnsParams,
+  GetJettonMastersParams,
+  GetJettonTransfersParams,
+  GetJettonWalletsParams,
+  GetMessagesParams,
+  GetNftCollectionsParams,
+  GetNftItemsParams,
+  GetNftTransfersParams,
+  EstimateFeeParams,
+  GetBlockHeaderParams,
+  GetBlockTransactionsParams,
+  RunGetMethodParams,
+  RunGetMethodV3Params,
+  RunGetMethodResponse,
+  GetTgBTCBalanceParams,
+  GetTgBTCHoldersParams,
+  GetTgBTCBurnsParams,
+  GetTgBTCWalletAddressByOwnerParams,
+  RadixConversionParams,
+  BinaryConversionParams,
+  GetTgBTCTransferPayload,
+  GetTgBTCBalanceResponse,
+  GetTgBTCBurnsResponse,
+  GetTgBTCConfigResponse,
+  GetTgBTCHoldersResponse,
+  GetTgBTCMasterAddressResponse,
+  GetTgBTCTransferResponse,
+  GetTgBTCTransfersParams,
+  GetTgBTCTransfersResponse,
+  GetTgBTCWalletAddressByOwnerResponse,
+  TgBTCMetaDataResponse,
+} from '~core/types/types';
+import { TONXJsonRpcProviderOptions, TONXRunAction } from "~core/types/action-types";
 
-type GetAccountBalanceParams = {
-  address: string;
-};
-
-type GetTransactionsParams = {
-  account?: string;
-  end_lt?: number;
-  end_utime?: number;
-  hash?: string;
-  limit?: number;
-  offset?: number;
-  seqno?: number;
-  shard?: string;
-  sort?: string;
-  start_lt?: number;
-  start_utime?: number;
-  workchain?: number;
-};
-
-type GetJettonBurnsParams = {
-  address?: string;
-  end_lt?: number;
-  end_utime?: number;
-  jetton_master?: string;
-  jetton_wallet?: string;
-  limit?: number;
-  offset?: number;
-  sort?: "ASC" | "DESC";
-  start_lt?: number;
-  start_utime?: number;
-};
-
-type GetJettonMastersParams = {
-  address?: string;
-  admin_address?: string;
-  limit?: number;
-  offset?: number;
-};
-
-type GetJettonTransfersParams = {
-  address?: string;
-  direction?: "in" | "out" | "both";
-  end_lt?: number;
-  end_utime?: number;
-  jetton_master?: string;
-  jetton_wallet?: string;
-  limit?: number;
-  offset?: number;
-  sort?: "ASC" | "DESC";
-  start_lt?: number;
-  start_utime?: number;
-};
-
-type GetJettonWalletsParams = {
-  address?: string;
-  jetton_address?: string;
-  limit?: number;
-  offset?: number;
-  owner_address?: string;
-};
-
-type GetMessagesParams = {
-  body_hash?: string;
-  destination?: string;
-  hash?: string;
-  limit?: number;
-  offset?: number;
-  source?: string;
-};
-
-type GetNftCollectionsParams = {
-  collection_address?: string;
-  limit?: number;
-  offset?: number;
-  owner_address?: string;
-};
-
-type GetNftItemsParams = {
-  collection_address?: string;
-  limit?: number;
-  offset?: number;
-  owner_address?: string;
-};
-
-type GetNftTransfersParams = {
-  address?: string;
-  collection_address?: string;
-  direction?: "in" | "out" | "both";
-  end_lt?: number;
-  end_utime?: number;
-  item_address?: string;
-  limit?: number;
-  offset?: number;
-  sort?: "ASC" | "DESC";
-  start_lt?: number;
-  start_utime?: number;
-};
-
-type EstimateFeeParams = {
-  address?: string;
-  body?: string;
-  ignore_chksig?: boolean;
-  init_code?: string;
-  init_data?: string;
-};
-
-type GetAddressInformationParams = {
-  address: string;
-};
-
-type GetAddressStateParams = {
-  address: string;
-};
-
-type GetBlockHeaderParams = {
-  file_hash?: string;
-  root_hash?: string;
-  seqno: number;
-  shard: string;
-  workchain: number;
-};
-
-type GetBlockTransactionsParams = {
-  after_hash?: string;
-  after_lt?: number;
-  count?: number;
-  file_hash?: string;
-  root_hash?: string;
-  seqno?: number;
-  shard?: string;
-  workchain?: number;
-};
-
-type GetExtendedAddressInformationParams = {
-  address: string;
-};
-
-type GetMasterchainBlockSignaturesParams = {
-  seqno: number;
-};
-
-type GetTokenDataParams = {
-  address: string;
-};
-
-type RunGetMethodParams = {
-  address: string;
-  method: string;
-  stack: [];
-};
-
-type SendMessageParams = {
-  boc: string;
-};
-
-type GetBocStatusParams = {
-  boc: string;
-}
-
-type VerifyBocParams = {
-  boc: string;
-}
-
-type RadixConversionParams = {
-  base: string;
-  number: string;
-}
-
-type BinaryConversionParams = {
-  ascii: string;
-  base64?: string;
-  base64url?: string;
-  hexadecimal?: string;
-}
-
-type DetectAddressParams = {
-  address: string;
-}
-
-type TONXRunAction =
-  | RunAction
-  | {
-    method: "getAccountBalance";
-    params: GetAccountBalanceParams;
-  }
-  | {
-    method: "getTransactions";
-    params: GetTransactionsParams;
-  }
-  | {
-    method: "getJettonBurns";
-    params: GetJettonBurnsParams;
-  }
-  | {
-    method: "getJettonMasters";
-    params: GetJettonMastersParams;
-  }
-  | {
-    method: "getJettonTransfers";
-    params: GetJettonTransfersParams;
-  }
-  | {
-    method: "getJettonWallets";
-    params: GetJettonWalletsParams;
-  }
-  | {
-    method: "getMessages";
-    params: GetMessagesParams;
-  }
-  | {
-    method: "getNftCollections";
-    params: GetNftCollectionsParams;
-  }
-  | {
-    method: "getNftItems";
-    params: GetNftItemsParams;
-  }
-  | {
-    method: "getNftTransfers";
-    params: GetNftTransfersParams;
-  }
-  | {
-    method: "estimateFee";
-    params: EstimateFeeParams;
-  }
-  | {
-    method: "getAddressInformation";
-    params: GetAddressInformationParams;
-  }
-  | {
-    method: "getAddressState";
-    params: GetAddressStateParams;
-  }
-  | {
-    method: "getBlockHeader";
-    params: GetBlockHeaderParams;
-  }
-  | {
-    method: "getBlockTransactions";
-    params: GetBlockTransactionsParams;
-  }
-  | {
-    method: "getConsensusBlock";
-  }
-  | {
-    method: "getExtendedAddressInformation";
-    params: GetExtendedAddressInformationParams;
-  }
-  | {
-    method: "getMasterchainBlockSignatures";
-    params: GetMasterchainBlockSignaturesParams;
-  }
-  | {
-    method: "getTokenData";
-    params: GetTokenDataParams;
-  }
-  | {
-    method: "runGetMethod";
-    params: RunGetMethodParams;
-  }
-  | {
-    method: "sendMessage";
-    params: SendMessageParams;
-  }
-  | {
-    method: "getBocStatus";
-    params: GetBocStatusParams;
-  } | {
-    method: "verifyBoc";
-    params: VerifyBocParams;
-  } | {
-    method: "radixConversion";
-    params: RadixConversionParams;
-  } | {
-    method: "binaryConversion";
-    params: BinaryConversionParams;
-  } | {
-    method: "detectAddress";
-    params: DetectAddressParams;
-  } | {
-    method: "getMasterchainInfo",
-  }
-
-export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
-  apiKey: string;
-  httpClientOptions?: CreateAxiosDefaults;
-};
 
 const version = "v2";
 export class TONXJsonRpcProvider extends JsonRpcProvider {
@@ -402,7 +150,25 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
       case "detectAddress":
         return { method: "detectAddress", params: action.params };
       case "getMasterchainInfo":
-        return { method: "getMasterchainInfo", params: {} }
+        return { method: "getMasterchainInfo", params: {} };
+      case "getTgBTCConfig":
+        return { method: "getTgBTCConfig", params: {} };
+      case "getTgBTCBalance":
+        return { method: "getTgBTCBalance", params: action.params };
+      case "getTgBTCMasterAddress":
+        return { method: "getTgBTCMasterAddress", params: {} };
+      case "getTgBTCHolders":
+        return { method: "getTgBTCHolders", params: action.params };
+      case "getTgBTCBurns":
+        return { method: "getTgBTCBurns", params: action.params };
+      case "getTgBTCWalletAddressByOwner":
+        return { method: "getTgBTCWalletAddressByOwner", params: action.params };
+      case "getTgBTCTransferPayload":
+        return { method: "getTgBTCTransferPayload", params: action.params };
+      case "getTgBTCMetaData":
+        return { method: "getTgBTCMetaData", params: {} };
+      case "getTgBTCTransfers":
+        return { method: "getTgBTCTransfers", params: action.params };
       default:
         return super.getRpcRequest(action as RunAction);
     }
@@ -543,11 +309,76 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
     });
   }
 
-  async runGetMethod(params: RunGetMethodParams): Promise<any> {
-    return await this._perform({
-      method: "runGetMethod",
-      params,
-    });
+  async runGetMethod(params: RunGetMethodParams | RunGetMethodV3Params): Promise<RunGetMethodResponse> {
+    const v2Params = z.object({
+      address: z.string(),
+      method: z.string(),
+      stack: z.optional(
+        z.array(
+          z.tuple([z.literal("num"), z.number()])
+            .or(z.tuple([z.literal("cell"), z.string()]))
+            .or(z.tuple([z.literal("slice"), z.string()]))
+        )
+      ),
+    }).safeParse(params);
+
+    if (v2Params.success) {
+      return await this._perform({
+        method: "runGetMethod",
+        params: {
+          address: v2Params.data.address,
+          method: v2Params.data.method,
+          stack: (!v2Params.data.stack) ? [] : v2Params.data.stack.map((eachStack) => {
+            switch (eachStack[0]) {
+              case "num":
+                return ["num", eachStack[1].toString(10)];
+              case "cell":
+                return ["tvm.Cell", eachStack[1]];
+              case "slice":
+                return ["tvm.Slice", eachStack[1]];
+            }
+          }),
+        },
+      });
+    }
+
+    const v3Params = z.object({
+      address: z.string(),
+      method: z.string(),
+      stack: z.optional(
+        z.array(
+          z.object({ type: z.literal("num"), value: z.string() })
+            .or(z.object({ type: z.literal("cell"), value: z.string() }))
+            .or(z.object({ type: z.literal("slice"), value: z.string() }))
+        )
+      ),
+    }).safeParse(params);
+
+    if (v3Params.success) {
+      return await this._perform({
+        method: "runGetMethod",
+        params: {
+          address: v3Params.data.address,
+          method: v3Params.data.method,
+          stack: (!v3Params.data.stack) ? [] : v3Params.data.stack.map((eachStack) => {
+            switch (eachStack.type) {
+              case "num":
+                if (eachStack.value.toLowerCase().startsWith("0x")) {
+                  return ["num", BigInt(eachStack.value.toLowerCase()).toString(10)];
+                } else {
+                  return ["num", eachStack.value]; // decimal number string
+                }
+              case "cell":
+                return ["tvm.Cell", eachStack.value];
+              case "slice":
+                return ["tvm.Slice", eachStack.value];
+            }
+          }),
+        },
+      });
+    }
+
+    throw new Error("Unknown type of params");
   }
 
   async sendMessage(boc: string): Promise<any> {
@@ -596,6 +427,69 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
     return await this._perform({
       method: "getMasterchainInfo",
       params: {},
+    });
+  }
+
+  async getTgBTCConfig(): Promise<GetTgBTCConfigResponse> {
+    return await this._perform({
+      method: "getTgBTCConfig",
+      params: {}
+    });
+  }
+
+  async getTgBTCBalance(params: GetTgBTCBalanceParams): Promise<GetTgBTCBalanceResponse> {
+    return await this._perform({
+      method: "getTgBTCBalance",
+      params: params
+    });
+  }
+
+  async getTgBTCMasterAddress(): Promise<GetTgBTCMasterAddressResponse> {
+    return await this._perform({
+      method: "getTgBTCMasterAddress",
+      params: {},
+    });
+  }
+
+  async getTgBTCHolders(params?: GetTgBTCHoldersParams): Promise<GetTgBTCHoldersResponse> {
+    return await this._perform({
+      method: "getTgBTCHolders",
+      params: params ?? {},
+    });
+  }
+
+  async getTgBTCBurns(params: GetTgBTCBurnsParams): Promise<GetTgBTCBurnsResponse> {
+    return await this._perform({
+      method: "getTgBTCBurns",
+      params: params,
+    });
+  }
+
+  async getTgBTCWalletAddressByOwner(params: GetTgBTCWalletAddressByOwnerParams): Promise<GetTgBTCWalletAddressByOwnerResponse> {
+    return await this._perform({
+      method: "getTgBTCWalletAddressByOwner",
+      params: params,
+    });
+  }
+
+  async getTgBTCTransferPayload(params: GetTgBTCTransferPayload): Promise<GetTgBTCTransferResponse> {
+    return await this._perform({
+      method: "getTgBTCTransferPayload",
+      params
+    });
+  }
+
+  async getTgBTCMetaData(): Promise<TgBTCMetaDataResponse> {
+    return await this._perform({
+      method: "getTgBTCMetaData",
+      params: {},
+    });
+  }
+
+  async getTgBTCTransfers(params: GetTgBTCTransfersParams): Promise<GetTgBTCTransfersResponse[]> {
+    return await this._perform({
+      method: "getTgBTCTransfers",
+      params: params,
     });
   }
 }
