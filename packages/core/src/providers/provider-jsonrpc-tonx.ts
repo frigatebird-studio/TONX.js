@@ -185,6 +185,11 @@ type DetectAddressParams = {
   address: string;
 }
 
+type GetTgBTCMasterAddressResponse = {
+  address: string;
+  account_friendly: string;
+}
+
 /**
  * @param {number} limit - The number of tgBTC holders you want to see
  * @param {number} offset - The number of tgBTC holders skipped
@@ -438,6 +443,8 @@ type TONXRunAction =
   } | {
     method: "getMasterchainInfo";
   } | {
+    method: "getTgBTCMasterAddress";
+  } | {
     method: "getTgBTCHolders";
     params: GetTgBTCHoldersParams;
   } | {
@@ -566,6 +573,8 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
         return { method: "detectAddress", params: action.params };
       case "getMasterchainInfo":
         return { method: "getMasterchainInfo", params: {} };
+      case "getTgBTCMasterAddress":
+        return { method: "getTgBTCMasterAddress", params: {} };
       case "getTgBTCHolders":
           return { method: "getTgBTCHolders", params: action.params };
       case "getTgBTCBurns":
@@ -770,6 +779,13 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
   async getMasterchainInfo(): Promise<any> {
     return await this._perform({
       method: "getMasterchainInfo",
+      params: {},
+    });
+  }
+
+  async getTgBTCMasterAddress(): Promise<GetTgBTCMasterAddressResponse> {
+    return await this._perform({
+      method: "getTgBTCMasterAddress",
       params: {},
     });
   }
