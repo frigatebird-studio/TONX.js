@@ -1,10 +1,11 @@
+import { Address } from "@ton/core";
+import { CreateAxiosDefaults } from "axios";
+import { z } from "zod";
+import { RunAction } from "./abstract-provider";
+import { Network } from "~core/types/network";
 import HttpFetchClient from "~core/utils/http-fetch-client";
 import { JsonRpcProvider } from "./provider-jsonrpc";
 import type { JsonRpcApiProviderOptions } from "./provider-jsonrpc";
-import { CreateAxiosDefaults } from "axios";
-import { RunAction } from "./abstract-provider";
-import { Network } from "~core/types/network";
-import { z } from "zod";
 
 type GetAccountBalanceParams = {
   address: string;
@@ -210,6 +211,179 @@ type DetectAddressParams = {
   address: string;
 }
 
+type GetTgBTCConfigResponse = {
+  jetton_master: string;
+  teleport: string;
+  coordinator: string;
+};
+
+/**
+ * @param {string} address - TON address of the owner's Jetton Wallet (base64, base64Url, or hexadecimal)  
+ */
+type GetTgBTCBalanceParams = {
+  address: string;
+};
+
+type GetTgBTCBalanceResponse = {
+  address: string;
+  balance: string;
+};
+
+type GetTgBTCMasterAddressResponse = {
+  address: string;
+  account_friendly: string;
+};
+
+/**
+ * @param {number} limit - The number of tgBTC holders you want to see
+ * @param {number} offset - The number of tgBTC holders skipped
+ */
+type GetTgBTCHoldersParams = {
+  limit?: number;
+  offset?: number;
+};
+
+type GetTgBTCHoldersResponse = {
+  holders: {
+    address: string;
+    balance: string;
+    last_updated: number;
+    owner_type: string;
+  }[];
+  total: number;
+};
+
+type GetTgBTCBurnsAddress = { address: string; } | { jetton_wallet: string; };
+
+type GetTgBTCBurnsUtime = {
+  start_utime: number;
+  end_utime: number;
+} | {
+  start_utime?: undefined;
+  end_utime?: undefined;
+};
+
+type GetTgBTCBurnsLt = {
+  start_lt: number;
+  end_lt: number;
+} | {
+  start_lt?: undefined;
+  end_lt?: undefined;
+};
+
+/**
+ * @param {string} address - TON address of the tgBTC owner (required when jetton_wallet is absent) (base64, base64Url, or hexadecimal)
+ * @param {string} jetton_wallet - TON address of the tgBTC Jetton Wallet (required when address is absent) (base64, base64Url, or hexadecimal)
+ * @param {number} start_utime - The beginning transaction Unix timestamp (required when end_utime is used)
+ * @param {number} end_utime - The ending transaction Unix timestamp (required when start_utime is used)
+ * @param {number} start_lt - The beginning transaction logical time (LT) (required when end_lt is used)
+ * @param {number} end_lt - The ending transaction logical time (LT) (required when start_lt is used)
+ * @param {"ASC" | "DESC"} sort - Enable sorting on responses by logical time (LT)
+ * @param {number} limit - The number of tgBTC burn messages you want to see
+ * @param {number} offset - The number of tgBTC burn messages skipped
+ */
+type GetTgBTCBurnsParams = GetTgBTCBurnsAddress
+  & GetTgBTCBurnsUtime
+  & GetTgBTCBurnsLt
+  & Partial<{ sort: "ASC" | "DESC"; limit: number; offset: number; }>;
+
+type GetTgBTCBurnsResponse = {
+  query_id: string;
+  owner: string;
+  jetton_master: string;
+  jetton_wallet: string;
+  amount: string;
+  transaction_hash: string;
+  transaction_lt: string;
+  transaction_now: number;
+  response_destination?: string;
+  custom_payload?: string;
+}
+
+type GetTgBTCWalletAddressByOwnerParams = {
+  owner_address: string;
+}
+
+type GetTgBTCWalletAddressByOwnerResponse = {
+  address: string;
+  address_friendly: string;
+  owner: string;
+  owner_friendly: string;
+  jetton: string;
+  jetton_friendly: string;
+}
+
+type GetTgBTCTransferPayload = {
+  amount: number;
+  destination: string;
+  source: string;
+  comment?: string;
+}
+
+type GetTgBTCTransferResponse = {
+  address: string;
+  amount: number;
+  payload: string;
+}
+
+type TgBTCMetaDataResponse = {
+  address: string;
+  name: string;
+  symbol: string;
+  total_supply?: string;
+  admin_address?: string;
+  decimals?: string;
+  mintable?: boolean;
+  uri?: string;
+  image?: string;
+  image_data?: number[];
+  description?: string;
+}
+
+type TimeRange = {
+  start_utime: number;
+  end_utime: number;
+} | {
+  start_utime?: undefined;
+  end_utime?: undefined;
+};
+
+type LtRange = {
+  start_lt: number;
+  end_lt: number;
+} | {
+  start_lt?: undefined;
+  end_lt?: undefined;
+};
+
+type GetTgBTCTransfersParams = {
+  address: string;
+  jetton_wallet?: string;
+  direction?: 'in' | 'out' | 'both'
+  sort?: 'ASC' | 'DESC';
+  /** Use with limit to batch read (1-256) */
+  limit?: number;
+  /** Skip first N rows*/
+  offset?: number;
+
+} & TimeRange & LtRange
+
+type GetTgBTCTransfersResponse = {
+  query_id: string;
+  source: string;
+  destination: string;
+  amount: string;
+  source_wallet: string;
+  jetton_master: string;
+  transaction_hash: string;
+  transaction_lt: string;
+  transaction_now: number;
+  response_destination?: string;
+  custom_payload?: string;
+  forward_ton_amount: string;
+  forward_payload?: string;
+}
+
 type TONXRunAction =
   | RunAction
   | {
@@ -311,7 +485,26 @@ type TONXRunAction =
     method: "detectAddress";
     params: DetectAddressParams;
   } | {
-    method: "getMasterchainInfo",
+    method: "getMasterchainInfo";
+  } | {
+    method: "getTgBTCConfig";
+  } | {
+    method: "getTgBTCBalance";
+    params: GetTgBTCBalanceParams;
+  } | {
+    method: "getTgBTCMasterAddress";
+  } | {
+    method: "getTgBTCHolders";
+    params: GetTgBTCHoldersParams;
+  } | {
+    method: "getTgBTCBurns";
+    params: GetTgBTCBurnsParams;
+  } | {
+    method: "getTgBTCTransferPayload",
+    params: GetTgBTCTransferPayload;
+  } | {
+    method: "getTgBTCTransfers",
+    params: GetTgBTCTransfersParams;
   }
 
 export type TONXJsonRpcProviderOptions = JsonRpcApiProviderOptions & {
@@ -428,7 +621,25 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
       case "detectAddress":
         return { method: "detectAddress", params: action.params };
       case "getMasterchainInfo":
-        return { method: "getMasterchainInfo", params: {} }
+        return { method: "getMasterchainInfo", params: {} };
+      case "getTgBTCConfig":
+        return { method: "getTgBTCConfig", params: {} };
+      case "getTgBTCBalance":
+        return { method: "getTgBTCBalance", params: action.params };
+      case "getTgBTCMasterAddress":
+        return { method: "getTgBTCMasterAddress", params: {} };
+      case "getTgBTCHolders":
+          return { method: "getTgBTCHolders", params: action.params };
+      case "getTgBTCBurns":
+        return { method: "getTgBTCBurns", params: action.params };
+      case "getTgBTCWalletAddressByOwner":
+        return { method: "getTgBTCWalletAddressByOwner", params: action.params };
+      case "getTgBTCTransferPayload":
+        return { method: "getTgBTCTransferPayload", params: action.params };
+      case "getTgBTCMetaData":
+        return { method: "getTgBTCMetaData", params: {} };
+      case "getTgBTCTransfers":
+        return { method: "getTgBTCTransfers", params: action.params };
       default:
         return super.getRpcRequest(action as RunAction);
     }
@@ -687,6 +898,69 @@ export class TONXJsonRpcProvider extends JsonRpcProvider {
     return await this._perform({
       method: "getMasterchainInfo",
       params: {},
+    });
+  }
+
+  async getTgBTCConfig(): Promise<GetTgBTCConfigResponse> {
+    return await this._perform({
+      method: "getTgBTCConfig",
+      params: {}
+    });
+  }
+
+  async getTgBTCBalance(params: GetTgBTCBalanceParams): Promise<GetTgBTCBalanceResponse> {
+    return await this._perform({
+      method: "getTgBTCBalance",
+      params: params
+    });
+  }
+
+  async getTgBTCMasterAddress(): Promise<GetTgBTCMasterAddressResponse> {
+    return await this._perform({
+      method: "getTgBTCMasterAddress",
+      params: {},
+    });
+  }
+
+  async getTgBTCHolders(params?: GetTgBTCHoldersParams): Promise<GetTgBTCHoldersResponse> {
+    return await this._perform({
+      method: "getTgBTCHolders",
+      params: params ?? {},
+    });
+  }
+
+  async getTgBTCBurns(params: GetTgBTCBurnsParams): Promise<GetTgBTCBurnsResponse> {
+    return await this._perform({
+      method: "getTgBTCBurns",
+      params: params,
+    });
+  }
+
+  async getTgBTCWalletAddressByOwner(params: GetTgBTCWalletAddressByOwnerParams): Promise<GetTgBTCWalletAddressByOwnerResponse> {
+    return await this._perform({
+      method: "getTgBTCWalletAddressByOwner",
+      params: params,
+    });
+  }
+
+  async getTgBTCTransferPayload(params: GetTgBTCTransferPayload): Promise<GetTgBTCTransferResponse> {
+    return await this._perform({
+      method: "getTgBTCTransferPayload",
+      params
+    });
+  }
+
+  async getTgBTCMetaData(): Promise<TgBTCMetaDataResponse> {
+    return await this._perform({
+      method: "getTgBTCMetaData",
+      params: {},
+    });
+  }
+
+  async getTgBTCTransfers(params: GetTgBTCTransfersParams): Promise<GetTgBTCTransfersResponse[]> {
+    return await this._perform({
+      method: "getTgBTCTransfers",
+      params: params,
     });
   }
 }
